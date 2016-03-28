@@ -106,7 +106,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 									 var card = Database.GetCardFromId(x.Key.CardId);
 									 card.Count = x.Count();
 									 card.IsCreated = x.Key.Stolen;
-									 card.HighlightInHand = x.First().IsInHand;
+									 card.HighlightInHand = x.Any(c => c.IsInHand);
 									 return card;
 								 });
 				var knownEntitesInDeck =
@@ -161,14 +161,6 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 					card.WasDiscarded = g.Key.Discarded;
 					return card;
 				}).ToSortedCardList();
-
-		private bool EntityIsHeroPower(int id)
-		{
-			if(id == 0)
-				return false;
-			Entity entity;
-			return Core.Game.Entities.TryGetValue(id, out entity) && entity.IsHeroPower;
-		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
