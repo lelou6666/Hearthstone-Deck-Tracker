@@ -151,7 +151,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 		}
 
 		public List<Card> DisplayRevealedCards 
-			=> RevealedCards.Where(x => (x.IsMinion || x.IsSpell || x.IsWeapon) && x.GetTag(GAME_TAG.CREATOR) <= 1 && (x.Info.OriginalController == Id || x.IsInHand || x.IsInDeck)).GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck) && !e.Info.Stolen, e.Info.Created, Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
+			=> RevealedCards.Where(x => (x.IsMinion || x.IsSpell || x.IsWeapon || !x.HasTag(GAME_TAG.CARDTYPE)) && (x.GetTag(GAME_TAG.CREATOR) == 1 || x.Info.OriginalController == Id || x.IsInHand || x.IsInDeck)).GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck) && !e.Info.Stolen, e.Info.Created, Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
 				.Select(g =>
 				{
 					var card = Database.GetCardFromId(g.Key.CardId);
