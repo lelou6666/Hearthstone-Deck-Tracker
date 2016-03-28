@@ -112,7 +112,7 @@ namespace Hearthstone_Deck_Tracker.Windows
 			else
 				GoldProgressGrid.Visibility = Collapsed;
 
-			//UpdateAttackValues();
+			UpdateAttackValues();
 
 			SetDeckTitle();
 			SetWinRates();
@@ -136,7 +136,7 @@ namespace Hearthstone_Deck_Tracker.Windows
 													 ? Collapsed : Visible;
 
 			// do the calculation if at least one of the icons is visible
-			if (IconBoardAttackPlayer.Visibility == Visible || IconBoardAttackOpponent.Visibility == Visible)
+			if (_game.Entities.Count > 67 && (IconBoardAttackPlayer.Visibility == Visible || IconBoardAttackOpponent.Visibility == Visible))
 			{
 				var board = new BoardState();
 				TextBlockPlayerAttack.Text = board.Player.Damage.ToString();
