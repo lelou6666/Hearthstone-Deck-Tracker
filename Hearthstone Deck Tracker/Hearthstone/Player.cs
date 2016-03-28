@@ -70,7 +70,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 					return card;
 				}).ToList();
 			var foo = DeckList.Instance.ActiveDeckVersion.Cards.Select(x => Enumerable.Repeat(x.Id, x.Count)).SelectMany(x => x).ToList();
-			var revealed = RevealedCards.Where(x => !x.Info.Created && (x.IsSpell || x.IsWeapon || x.IsMinion) && !x.IsInDeck).ToList();
+			var revealed = RevealedCards.Where(x => !x.Info.Created && (x.IsSpell || x.IsWeapon || x.IsMinion) && (!x.IsInDeck || (x.Info.Stolen && x.Info.OriginalController == Id))).ToList();
 			var notInDeck = new List<string>();
 			foreach(var e in revealed)
 			{
@@ -101,7 +101,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 			{
 				var createdInHand = Config.Instance.ShowPlayerGet ? Hand.Where(x => x.Info.Created).GroupBy(x => x.CardId).Select(x => CardSelector(x, true)).ToList() : new List<Card>();
 				var revealed =
-					RevealedCards.Where(x => !x.Info.Created && (x.IsMinion || x.IsSpell || x.IsWeapon) && !x.IsInDeck && (!x.Info.Stolen || (x.Info.Stolen && x.IsInHand)))
+					RevealedCards.Where(x => !x.Info.Created && (x.IsMinion || x.IsSpell || x.IsWeapon) && (!x.IsInDeck || (x.Info.Stolen && x.Info.OriginalController == Id)))
 								 .GroupBy(x => new {x.CardId, Stolen = x.Info.Stolen && x.Info.OriginalController != Id})
 								 .Select(x =>
 								 {
@@ -112,7 +112,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 									 return card;
 								 });
 				var knownEntitesInDeck =
-					RevealedCards.Where(x => x.IsInDeck).GroupBy(ce => new { ce.CardId, Created = (ce.Info.Created || ce.Info.Stolen)}).Select(g =>
+					Deck.Where(x => x.HasCardId).GroupBy(ce => new { ce.CardId, Created = (ce.Info.Created || ce.Info.Stolen)}).Select(g =>
 					{
 						var card = Database.GetCardFromId(g.Key.CardId);
 						card.Count = g.Count();
@@ -163,7 +163,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 				(x.IsMinion || x.IsSpell || x.IsWeapon || !x.HasTag(GAME_TAG.CARDTYPE)) 
 			&& (x.GetTag(GAME_TAG.CREATOR) == 1 || (!x.Info.Created && x.Info.OriginalController == Id) || x.IsInHand || x.IsInDeck) 
 			&& !(x.Info.Created && x.IsInSetAside))
-			.GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck) && !e.Info.Stolen, e.Info.Created, Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
+			.GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck), Created = e.Info.Created || (e.Info.Stolen && e.Info.OriginalController != Id), Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
 				.Select(g =>
 				{
 					var card = Database.GetCardFromId(g.Key.CardId);
@@ -196,7 +196,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 			if(IsLocalPlayer)
 				UpdateKnownEntitesInDeck(entity.CardId);
 			if(!IsLocalPlayer)
-				entity.Info.Reset();
+				entity.Info.Hidden = true;
 			entity.Info.Turn = turn;
 			Log(entity);
 		}

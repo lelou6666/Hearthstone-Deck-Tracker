@@ -246,6 +246,8 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 		{
 			get
 			{
+				if(Hidden)
+					return CardMark.None;
 				if(_entity.CardId == HearthDb.CardIds.NonCollectible.Neutral.TheCoin
 					   || _entity.CardId == HearthDb.CardIds.NonCollectible.Neutral.GallywixsCoinToken)
 					return CardMark.Coin;
@@ -266,15 +268,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 		public bool Created { get; set; }
 		public bool HasOutstandingTagChanges { get; set; }
 		public int OriginalController { get; set; }
-
-		public void Reset()
-		{
-			//CardId = "";
-			Created = false;
-			Returned = false;
-			Mulliganed = false;
-			Discarded = false;
-		}
+		public bool Hidden { get; set; }
 
 		public override string ToString()
 		{
