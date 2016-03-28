@@ -31,8 +31,11 @@ namespace Hearthstone_Deck_Tracker.Windows
 			{
 				if (i < opponentHandCount)
 				{
-					_cardMarks[i].Text = !Config.Instance.HideOpponentCardAge ? _game.Opponent.Hand[i].Turn.ToString() : "";
-					_cardMarks[i].Mark = !Config.Instance.HideOpponentCardMarks ? _game.Opponent.Hand[i].CardMark : CardMark.None;
+					var entity = _game.Opponent.Hand.FirstOrDefault(x => x.GetTag(GAME_TAG.ZONE_POSITION) == i + 1);
+					if(entity == null)
+						continue;
+					_cardMarks[i].Text = !Config.Instance.HideOpponentCardAge ? entity.Info.Turn.ToString() : "";
+					_cardMarks[i].Mark = !Config.Instance.HideOpponentCardMarks ? entity.Info.CardMark : CardMark.None;
 					_cardMarks[i].Visibility = (_game.IsInMenu || (Config.Instance.HideOpponentCardAge && Config.Instance.HideOpponentCardMarks))
 												   ? Hidden : Visible;
 				}
@@ -40,9 +43,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 					_cardMarks[i].Visibility = Collapsed;
 			}
 
-			var oppBoard = Core.Game.Opponent.Board.Where(x => x.Entity.IsMinion).OrderBy(x => x.Entity.GetTag(GAME_TAG.ZONE_POSITION)).ToList();
-			var playerBoard =
-				Core.Game.Player.Board.Where(x => x.Entity.IsMinion).OrderBy(x => x.Entity.GetTag(GAME_TAG.ZONE_POSITION)).ToList();
+			var oppBoard = Core.Game.Opponent.Board.Where(x => x.IsMinion).OrderBy(x => x.GetTag(GAME_TAG.ZONE_POSITION)).ToList();
+			var playerBoard = Core.Game.Player.Board.Where(x => x.IsMinion).OrderBy(x => x.GetTag(GAME_TAG.ZONE_POSITION)).ToList();
 			UpdateMouseOverDetectionRegions(oppBoard, playerBoard);
 			if(!_game.IsInMenu && _game.IsMulliganDone && User32.IsHearthstoneInForeground())
 				DetectMouseOver(playerBoard, oppBoard);
@@ -80,9 +82,9 @@ namespace Hearthstone_Deck_Tracker.Windows
 			ListViewOpponent.Visibility = Config.Instance.HideOpponentCards ? Collapsed : Visible;
 			ListViewPlayer.Visibility = Config.Instance.HidePlayerCards ? Collapsed : Visible;
 
-			SetCardCount(_game.Player.HandCount, _game.Player.DeckCount);
+			SetCardCount(_game.Player.HandCount, _game.IsInMenu ? 30 : _game.Player.DeckCount);
 
-			SetOpponentCardCount(_game.Opponent.HandCount, _game.Opponent.DeckCount);
+			SetOpponentCardCount(_game.Opponent.HandCount, _game.IsInMenu ? 30 : _game.Opponent.DeckCount);
 
 
 			LblWins.Visibility = Config.Instance.ShowDeckWins && _game.IsUsingPremade ? Visible : Collapsed;
@@ -110,7 +112,7 @@ namespace Hearthstone_Deck_Tracker.Windows
 			else
 				GoldProgressGrid.Visibility = Collapsed;
 
-			UpdateAttackValues();
+			//UpdateAttackValues();
 
 			SetDeckTitle();
 			SetWinRates();

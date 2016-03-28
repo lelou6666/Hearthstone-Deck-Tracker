@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Hearthstone_Deck_Tracker.Hearthstone.Entities;
 using Hearthstone_Deck_Tracker.Utility.Extensions;
 
 namespace Hearthstone_Deck_Tracker.Controls
@@ -38,29 +39,32 @@ namespace Hearthstone_Deck_Tracker.Controls
 					existing.Card.HighlightInHand = card.HighlightInHand;
 					existing.Update(highlight).Forget();
 				}
+				else if(existing.Card.IsCreated != card.IsCreated)
+					existing.Update(false).Forget();
 			}
-			foreach(var card in _animatedCards.Select(x => x.Card).ToList())
+			foreach(var card in _animatedCards)
 			{
-				if(!cards.Any(x =>  AreEqualForList(x, card)))
+				if(!cards.Any(x => AreEqualForList(x, card.Card)))
 					RemoveCard(card, player);
 			}
 		}
-		
-		private async void RemoveCard(Hearthstone.Card card, bool player)
+
+		private async void RemoveCard(AnimatedCard card, bool player, bool force = false)
 		{
-			var existing = _animatedCards.FirstOrDefault(x => AreEqualForList(x.Card, card));
-			if(existing == null)
-				return;
-			if(Config.Instance.RemoveCardsFromDeck || !player || DeckList.Instance.ActiveDeck == null)
+			await card.FadeOut(card.Card.Count > 0);
+			_animatedCards.Remove(card);
+			ItemsControl.Items.Remove(card);
+			return;
+			if(Config.Instance.RemoveCardsFromDeck || force || !player || DeckList.Instance.ActiveDeck == null)
 			{
-				await existing.FadeOut(existing.Card.Count > 0);
-				_animatedCards.Remove(existing);
-				ItemsControl.Items.Remove(existing);
+				await card.FadeOut(card.Card.Count > 0);
+				_animatedCards.Remove(card);
+				ItemsControl.Items.Remove(card);
 			}
-			else if(existing.Card.Count > 0)
+			else if(card.Card.Count > 0)
 			{
-				await existing.Update(true);
-				existing.Card.Count = 0;
+				await card.Update(true);
+				card.Card.Count = 0;
 			}
 		}
 

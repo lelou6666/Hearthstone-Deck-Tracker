@@ -239,7 +239,7 @@ namespace Hearthstone_Deck_Tracker
 			Game.Reset();
 			if(DeckList.Instance.ActiveDeck != null)
 			{
-				Game.SetPremadeDeck((Deck)DeckList.Instance.ActiveDeck.Clone());
+				Game.IsUsingPremade = true;
 				MainWindow.UpdateMenuItemVisibility();
 			}
 			if(stoppedReader)
