@@ -233,21 +233,21 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 
 	public class EntityInfo
 	{
-		private Entity _entity;
+		private readonly Entity _entity;
 		public EntityInfo(Entity entity)
 		{
 			_entity = entity;
 		}
 
-		public string CardId { get; set; }
+		//public string CardId { get; set; }
 		public int Turn { get; set; }
 
 		public CardMark CardMark
 		{
 			get
 			{
-				if(CardId == HearthDb.CardIds.NonCollectible.Neutral.TheCoin
-					   || CardId == HearthDb.CardIds.NonCollectible.Neutral.GallywixsCoinToken)
+				if(_entity.CardId == HearthDb.CardIds.NonCollectible.Neutral.TheCoin
+					   || _entity.CardId == HearthDb.CardIds.NonCollectible.Neutral.GallywixsCoinToken)
 					return CardMark.Coin;
 				if(Returned)
 					return CardMark.Returned;
@@ -269,7 +269,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 
 		public void Reset()
 		{
-			CardId = "";
+			//CardId = "";
 			Created = false;
 			Returned = false;
 			Mulliganed = false;
