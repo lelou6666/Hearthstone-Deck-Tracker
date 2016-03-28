@@ -56,6 +56,8 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 		public IEnumerable<Entity> Secrets => PlayerEntites.Where(x => x.IsInSecret);
 		public IEnumerable<Entity> SetAside => PlayerEntites.Where(x => x.IsInSetAside);
 
+		public List<JoustedCard> KnownCardsInDeck { get; } = new List<JoustedCard>();
+
 		private Tuple<List<Card>, List<Card>> GetCardsInDeck()
 		{
 			var knownEntitesInDeck =
@@ -118,8 +120,14 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 						card.Jousted = true;
 						return card;
 					}).ToList();
+				var knownCardsInDeck = KnownCardsInDeck.Select(x =>
+				{
+					var card = Database.GetCardFromId(x.CardId);
+					card.Jousted = true;
+					return card;
+				});
 				if(DeckList.Instance.ActiveDeck == null)
-					return revealed.Concat(createdInHand).Concat(knownEntitesInDeck).ToSortedCardList();
+					return revealed.Concat(createdInHand).Concat(knownEntitesInDeck).Concat(knownCardsInDeck).ToSortedCardList();
 				var cards = GetCardsInDeck();
 				var inDeck = cards.Item1;
 				var notInDeck = cards.Item2.Where(x => inDeck.All(c => x.Id != c.Id)).ToList();
@@ -151,7 +159,11 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 		}
 
 		public List<Card> DisplayRevealedCards 
-			=> RevealedCards.Where(x => (x.IsMinion || x.IsSpell || x.IsWeapon || !x.HasTag(GAME_TAG.CARDTYPE)) && (x.GetTag(GAME_TAG.CREATOR) == 1 || x.Info.OriginalController == Id || x.IsInHand || x.IsInDeck)).GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck) && !e.Info.Stolen, e.Info.Created, Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
+			=> RevealedCards.Where(x => 
+				(x.IsMinion || x.IsSpell || x.IsWeapon || !x.HasTag(GAME_TAG.CARDTYPE)) 
+			&& (x.GetTag(GAME_TAG.CREATOR) == 1 || (!x.Info.Created && x.Info.OriginalController == Id) || x.IsInHand || x.IsInDeck) 
+			&& !(x.Info.Created && x.IsInSetAside))
+			.GroupBy(e => new {e.CardId, Hidden = (e.IsInHand || e.IsInDeck) && !e.Info.Stolen, e.Info.Created, Discarded = e.Info.Discarded && Config.Instance.HighlightDiscarded})
 				.Select(g =>
 				{
 					var card = Database.GetCardFromId(g.Key.CardId);
@@ -160,7 +172,12 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 					card.IsCreated = g.Key.Created;
 					card.WasDiscarded = g.Key.Discarded;
 					return card;
-				}).ToSortedCardList();
+				}).Concat(KnownCardsInDeck.Select(x =>
+				{
+					var card = Database.GetCardFromId(x.CardId);
+					card.Jousted = true;
+					return card;
+				})).ToSortedCardList();
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -171,10 +188,13 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 			Id = -1;
 			GoingFirst = false;
 			Fatigue = 0;
+			KnownCardsInDeck.Clear();
 		}
 
 		public void Draw(Entity entity, int turn)
 		{
+			if(IsLocalPlayer)
+				UpdateKnownEntitesInDeck(entity.CardId);
 			if(!IsLocalPlayer)
 				entity.Info.Reset();
 			entity.Info.Turn = turn;
@@ -190,6 +210,8 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void Play(Entity entity, int turn)
 		{
+			if(!IsLocalPlayer)
+				UpdateKnownEntitesInDeck(entity.CardId, entity.Info.Turn);
 			if(entity.GetTag(GAME_TAG.CARDTYPE) == (int)TAG_CARDTYPE.TOKEN)
 				entity.Info.Created = true;
 			entity.Info.Turn = turn;
@@ -198,6 +220,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void DeckToPlay(Entity entity, int turn)
 		{
+			UpdateKnownEntitesInDeck(entity.CardId);
 			entity.Info.Turn = turn;
 			Log(entity);
 		}
@@ -225,6 +248,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void RemoveFromDeck(Entity entity, int turn)
 		{
+			//Do not check for KnownCardIds here, this is how jousted cards get removed from the deck
 			entity.Info.Turn = turn;
 			entity.Info.Discarded = true;
 			Log(entity);
@@ -238,6 +262,8 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void HandDiscard(Entity entity, int turn)
 		{
+			if(!IsLocalPlayer)
+				UpdateKnownEntitesInDeck(entity.CardId, entity.Info.Turn);
 			entity.Info.Turn = turn;
 			entity.Info.Discarded = true;
 			Log(entity);
@@ -245,6 +271,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void DeckDiscard(Entity entity, int turn)
 		{
+			UpdateKnownEntitesInDeck(entity.CardId);
 			entity.Info.Turn = turn;
 			entity.Info.Discarded = true;
 			Log(entity);
@@ -267,7 +294,19 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 		public void JoustReveal(Entity entity, int turn)
 		{
 			entity.Info.Turn = turn;
+			var card = KnownCardsInDeck.FirstOrDefault(x => x.CardId == entity.CardId);
+			if(card != null)
+				card.Turn = turn;
+			else
+				KnownCardsInDeck.Add(new JoustedCard(entity.CardId, turn));
 			Log(entity);
+		}
+
+		private void UpdateKnownEntitesInDeck(string cardId, int turn = int.MaxValue)
+		{
+			var card = KnownCardsInDeck.FirstOrDefault(x => x.CardId == cardId && turn >= x.Turn);
+			if(card != null)
+				KnownCardsInDeck.Remove(card);
 		}
 
 		public void SecretTriggered(Entity entity, int turn)
@@ -278,6 +317,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public void SecretPlayedFromDeck(Entity entity, int turn)
 		{
+			UpdateKnownEntitesInDeck(entity.CardId);
 			entity.Info.Turn = turn;
 			Log(entity);
 		}
@@ -316,6 +356,18 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 		{
 			entity.Info.Turn = turn;
 			Log(entity);
+		}
+	}
+
+	public class JoustedCard
+	{
+		public string CardId { get; set; }
+		public int Turn { get; set; }
+
+		public JoustedCard(string cardId, int turn)
+		{
+			CardId = cardId;
+			Turn = turn;
 		}
 	}
 }
