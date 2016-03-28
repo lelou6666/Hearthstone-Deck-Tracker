@@ -359,5 +359,10 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 		}
 
 		private static int GetMaxEntityId(IHsGameState gameState, IGame game) => Math.Max(game.Entities.Count, gameState.MaxId);
+
+		internal void Reset()
+		{
+			_tagChangeHandler.ClearQueuedActions();
+		}
 	}
 }

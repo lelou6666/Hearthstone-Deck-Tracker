@@ -75,6 +75,7 @@ namespace Hearthstone_Deck_Tracker.LogReader
 			WasInProgress = false;
 			SetupDone = false;
 			DeterminedPlayers = false;
+			CurrentEntityId = 0;
 		}
 
 		public void SetCurrentEntity(int id)
@@ -92,7 +93,7 @@ namespace Hearthstone_Deck_Tracker.LogReader
 			Entity entity;
 			if(_game.Entities.TryGetValue(CurrentEntityId, out entity))
 				entity.Info.HasOutstandingTagChanges = false;
-			CurrentEntityId = -1;
+			CurrentEntityId = 0;
 		}
 	}
 }

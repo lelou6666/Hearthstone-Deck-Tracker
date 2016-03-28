@@ -94,6 +94,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 
 		private void UpdateBoardDamage()
 		{
+			if(Core.Game.Entities.Count < 67)
+				return;
 			var board = new BoardState();
 			PlayerDataGrid.ItemsSource = board.Player.Cards;
 			OpponentDataGrid.ItemsSource = board.Opponent.Cards;
