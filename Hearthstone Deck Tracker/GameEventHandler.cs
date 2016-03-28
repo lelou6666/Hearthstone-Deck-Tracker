@@ -1171,14 +1171,7 @@ namespace Hearthstone_Deck_Tracker
 
 		public void HandleOpponentHandDiscard(Entity entity, string cardId, int from, int turn)
 		{
-			try
-			{
-				_game.Opponent.Play(entity, turn);
-			}
-			catch(Exception ex)
-			{
-				Log.Info(ex.ToString());
-			}
+			_game.Opponent.HandDiscard(entity, turn);
 			Core.UpdateOpponentCards();
 			_game.AddPlayToCurrentGame(PlayType.OpponentHandDiscard, turn, cardId);
 			GameEvents.OnOpponentHandDiscard.Execute(Database.GetCardFromId(cardId));
