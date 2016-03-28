@@ -262,7 +262,7 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 		public bool Discarded { get; set; }
 		public bool Returned { get; set; }
 		public bool Mulliganed { get; set; }
-		public bool Stolen => OriginalController != _entity.GetTag(GAME_TAG.CONTROLLER);
+		public bool Stolen => OriginalController > 0 && OriginalController != _entity.GetTag(GAME_TAG.CONTROLLER);
 		public bool Created { get; set; }
 		public bool HasOutstandingTagChanges { get; set; }
 		public int OriginalController { get; set; }
