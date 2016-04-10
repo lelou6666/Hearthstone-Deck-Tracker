@@ -90,6 +90,7 @@ namespace Hearthstone_Deck_Tracker.Utility
 			}
 		}
 
+<<<<<<< HEAD
 		public static bool ForceLocalReplayViewer
 		{
 			get { return Config.Instance.ForceLocalReplayViewer; }
@@ -176,6 +177,14 @@ namespace Hearthstone_Deck_Tracker.Utility
 			set
 			{
 				Config.Instance.HsReplayUploadSpectator = value;
+=======
+		public static bool DeckPickerWildIncludesStandard
+		{
+			get { return Config.Instance.DeckPickerWildIncludesStandard; }
+			set
+			{
+				Config.Instance.DeckPickerWildIncludesStandard = value;
+>>>>>>> refs/remotes/Epix37/master
 				Config.Save();
 			}
 		}
