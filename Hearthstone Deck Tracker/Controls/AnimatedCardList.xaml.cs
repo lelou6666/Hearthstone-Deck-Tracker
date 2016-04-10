@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Hearthstone_Deck_Tracker.Hearthstone.Entities;
 using Hearthstone_Deck_Tracker.Utility.Extensions;
+using Hearthstone_Deck_Tracker.Utility.Logging;
 
 namespace Hearthstone_Deck_Tracker.Controls
 {
@@ -15,23 +17,61 @@ namespace Hearthstone_Deck_Tracker.Controls
 			InitializeComponent();
 		}
 
-		public void Update(List<Hearthstone.Card> cards, bool player, bool reset)
+		public void Update(List<Hearthstone.Card> cards, bool reset)
 		{
-			if(reset)
+			try
 			{
-				_animatedCards.Clear();
-				ItemsControl.Items.Clear();
-			}
-			foreach(var card in cards)
-			{
-				var existing = _animatedCards.FirstOrDefault(x => AreEqualForList(x.Card, card));
-				if(existing == null)
+				if(reset)
+				{
+					_animatedCards.Clear();
+					ItemsControl.Items.Clear();
+				}
+				var newCards = new List<Hearthstone.Card>();
+				foreach(var card in cards)
+				{
+					var existing = _animatedCards.FirstOrDefault(x => AreEqualForList(x.Card, card));
+					if(existing == null)
+						newCards.Add(card);
+					else if(existing.Card.Count != card.Count || existing.Card.HighlightInHand != card.HighlightInHand)
+					{
+						var highlight = existing.Card.Count != card.Count;
+						existing.Card.Count = card.Count;
+						existing.Card.HighlightInHand = card.HighlightInHand;
+						existing.Update(highlight).Forget();
+					}
+					else if(existing.Card.IsCreated != card.IsCreated)
+						existing.Update(false).Forget();
+				}
+				var toUpdate = new List<AnimatedCard>();
+				foreach(var aCard in _animatedCards)
+				{
+					if(!cards.Any(x => AreEqualForList(x, aCard.Card)))
+						toUpdate.Add(aCard);
+				}
+				var toRemove = new List<Tuple<AnimatedCard, bool>>();
+				foreach(var card in toUpdate)
+				{
+					var newCard = newCards.FirstOrDefault(x => x.Id == card.Card.Id);
+					toRemove.Add(new Tuple<AnimatedCard, bool>(card, newCard == null));
+					if(newCard != null)
+					{
+						var newAnimated = new AnimatedCard(newCard);
+						_animatedCards.Insert(_animatedCards.IndexOf(card), newAnimated);
+						ItemsControl.Items.Insert(_animatedCards.IndexOf(card), newAnimated);
+						newAnimated.Update(true).Forget();
+						newCards.Remove(newCard);
+					}
+				}
+				foreach(var card in toRemove)
+					RemoveCard(card.Item1, card.Item2);
+				foreach(var card in newCards)
 				{
 					var newCard = new AnimatedCard(card);
 					_animatedCards.Insert(cards.IndexOf(card), newCard);
 					ItemsControl.Items.Insert(cards.IndexOf(card), newCard);
 					newCard.FadeIn(!reset).Forget();
 				}
+<<<<<<< HEAD
 				else if(existing.Card.Count != card.Count || existing.Card.HighlightInHand != card.HighlightInHand)
 				{
 					var highlight = existing.Card.Count != card.Count;
@@ -66,6 +106,21 @@ namespace Hearthstone_Deck_Tracker.Controls
 				await card.Update(true);
 				card.Card.Count = 0;
 			}
+=======
+			}
+			catch(Exception e)
+			{
+				Log.Error(e);
+			}
+		}
+
+		private async void RemoveCard(AnimatedCard card, bool fadeOut)
+		{
+			if(fadeOut)
+				await card.FadeOut(card.Card.Count > 0);
+			_animatedCards.Remove(card);
+			ItemsControl.Items.Remove(card);
+>>>>>>> refs/remotes/Epix37/master
 		}
 
 		private bool AreEqualForList(Hearthstone.Card c1, Hearthstone.Card c2)

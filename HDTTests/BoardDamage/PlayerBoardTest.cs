@@ -14,7 +14,11 @@ namespace HDTTests.BoardDamage
 		[TestInitialize]
 		public void Setup()
 		{
+<<<<<<< HEAD
 			var hero = new EntityBuilder("HERO_01", 5, 30).ToEntity();
+=======
+			var hero = new EntityBuilder("HERO_01", 5, 30).Hero().ToEntity();
+>>>>>>> refs/remotes/Epix37/master
 			var weapon = new EntityBuilder("DS1_188", 5, 0)
 				.Weapon().Durability(2).ToEntity();
 			_cards = new List<Entity>();

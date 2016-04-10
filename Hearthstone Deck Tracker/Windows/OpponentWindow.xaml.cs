@@ -2,18 +2,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using Hearthstone_Deck_Tracker.Annotations;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
 using Point = System.Drawing.Point;
+using Panel = System.Windows.Controls.Panel;
 
 #endregion
 
@@ -53,7 +52,7 @@ namespace Hearthstone_Deck_Tracker
 			}
 		}
 
-		public List<Card> OpponentDeck => _game.Opponent.DisplayRevealedCards;
+		public List<Card> OpponentDeck => _game.Opponent.OpponentCardList;
 
 		public bool ShowToolTip => Config.Instance.WindowCardToolTips;
 
@@ -166,7 +165,11 @@ namespace Hearthstone_Deck_Tracker
 				Topmost = false;
 		}
 
+<<<<<<< HEAD
 		public void UpdateOpponentCards(List<Card> cards, bool reset) => ListViewOpponent.Update(cards, false, reset);
+=======
+		public void UpdateOpponentCards(List<Card> cards, bool reset) => ListViewOpponent.Update(cards, reset);
+>>>>>>> refs/remotes/Epix37/master
 
 		[NotifyPropertyChangedInvocator]
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -178,6 +181,12 @@ namespace Hearthstone_Deck_Tracker
 		{
 			Update();
 			UpdateOpponentLayout();
+		}
+
+		public void UpdateCardFrames()
+		{
+			CanvasOpponentChance.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
+			CanvasOpponentCount.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
 		}
 	}
 }

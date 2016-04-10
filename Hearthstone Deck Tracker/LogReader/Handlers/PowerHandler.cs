@@ -19,7 +19,8 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 {
 	public class PowerHandler
 	{
-		private DateTime _lastDeterminePlayersWarning = DateTime.MinValue;
+		private DateTime _lastDeterminePlayersWarning1 = DateTime.MinValue;
+		private DateTime _lastDeterminePlayersWarning2 = DateTime.MinValue;
 		private readonly TagChangeHandler _tagChangeHandler = new TagChangeHandler();
 		private readonly List<Entity> _tmpEntities = new List<Entity>();
 
@@ -35,7 +36,11 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 					game.Entities.Add(id, new Entity(id) {Name = "GameEntity"});
 				gameState.SetCurrentEntity(id);
 				if(gameState.DeterminedPlayers)
+<<<<<<< HEAD
 					_tagChangeHandler.InvokeQueuedActions();
+=======
+					_tagChangeHandler.InvokeQueuedActions(game);
+>>>>>>> refs/remotes/Epix37/master
 				return;
 			}
 			else if(PlayerEntityRegex.IsMatch(logLine))
@@ -48,7 +53,11 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 					game.Entities[id].Name = game.GetStoredPlayerName(id);
 				gameState.SetCurrentEntity(id);
 				if(gameState.DeterminedPlayers)
+<<<<<<< HEAD
 					_tagChangeHandler.InvokeQueuedActions();
+=======
+					_tagChangeHandler.InvokeQueuedActions(game);
+>>>>>>> refs/remotes/Epix37/master
 				return;
 			}
 			else if(TagChangeRegex.IsMatch(logLine))
@@ -152,7 +161,11 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 				}
 				gameState.SetCurrentEntity(id);
 				if(gameState.DeterminedPlayers)
+<<<<<<< HEAD
 					_tagChangeHandler.InvokeQueuedActions();
+=======
+					_tagChangeHandler.InvokeQueuedActions(game);
+>>>>>>> refs/remotes/Epix37/master
 				gameState.CurrentEntityHasCardId = !string.IsNullOrEmpty(cardId);
 				gameState.CurrentEntityZone = LogReaderHelper.ParseEnum<TAG_ZONE>(match.Groups["zone"].Value);
 				return;
@@ -177,7 +190,11 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 					game.Entities[entityId].CardId = cardId;
 					gameState.SetCurrentEntity(entityId);
 					if(gameState.DeterminedPlayers)
+<<<<<<< HEAD
 						_tagChangeHandler.InvokeQueuedActions();
+=======
+						_tagChangeHandler.InvokeQueuedActions(game);
+>>>>>>> refs/remotes/Epix37/master
 				}
 				if(gameState.JoustReveals > 0)
 				{
@@ -306,18 +323,31 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 			if(game.IsInMenu)
 				return;
 			if(!creationTag && gameState.DeterminedPlayers)
+<<<<<<< HEAD
 				_tagChangeHandler.InvokeQueuedActions();
 			if(!creationTag)
 				gameState.ResetCurrentEntity();
 			else if(!gameState.DeterminedPlayers && gameState.SetupDone && (DateTime.Now - _lastDeterminePlayersWarning).TotalSeconds > 5)
+=======
+				_tagChangeHandler.InvokeQueuedActions(game);
+			if(!creationTag)
+				gameState.ResetCurrentEntity();
+			if(!gameState.DeterminedPlayers && gameState.SetupDone)
+>>>>>>> refs/remotes/Epix37/master
 			{
-				_lastDeterminePlayersWarning = DateTime.Now;
-				Log.Warn("Could not determine players by checking for opponent hand.");
+				if((DateTime.Now - _lastDeterminePlayersWarning1).TotalSeconds > 5)
+				{
+					Log.Warn("Could not determine players by checking for opponent hand.");
+					_lastDeterminePlayersWarning1 = DateTime.Now;
+				}
 				var playerCard = game.Entities.FirstOrDefault(x => x.Value.IsInHand && !string.IsNullOrEmpty(x.Value.CardId)).Value;
 				if(playerCard != null)
 					_tagChangeHandler.DeterminePlayers(gameState, game, playerCard.GetTag(GAME_TAG.CONTROLLER), false);
-				else
+				else if((DateTime.Now - _lastDeterminePlayersWarning2).TotalSeconds > 5)
+				{
 					Log.Warn("Could not determine players by checking for player hand either... waiting for draws...");
+					_lastDeterminePlayersWarning2 = DateTime.Now;
+				}
 			}
 			if(!setup)
 				gameState.SetupDone = true;

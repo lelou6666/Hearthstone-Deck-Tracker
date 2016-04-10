@@ -76,7 +76,11 @@ namespace Hearthstone_Deck_Tracker.Windows
 			if(!Config.Instance.HideOpponentCardMarks && cardMark != null)
 			{
 				var index = _cardMarks.IndexOf(cardMark.Label);
+<<<<<<< HEAD
 				var card = _game.Opponent.Hand.FirstOrDefault(x => x.GetTag(GAME_TAG.ZONE_POSITION) == index + 1 && x.HasCardId)?.Card;
+=======
+				var card = _game.Opponent.Hand.FirstOrDefault(x => x.GetTag(GAME_TAG.ZONE_POSITION) == index + 1 && x.HasCardId && !x.Info.Hidden)?.Card;
+>>>>>>> refs/remotes/Epix37/master
 				if(card != null)
 				{
 					ToolTipCard.SetValue(DataContextProperty, card);

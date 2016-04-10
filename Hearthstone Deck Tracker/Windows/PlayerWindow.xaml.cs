@@ -2,16 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using Hearthstone_Deck_Tracker.Annotations;
 using Hearthstone_Deck_Tracker.Hearthstone;
+using Panel = System.Windows.Controls.Panel;
 using Point = System.Drawing.Point;
 
 #endregion
@@ -58,7 +56,7 @@ namespace Hearthstone_Deck_Tracker
 				CanvasPlayerCount.Visibility = Visibility.Collapsed;
 				LblWins.Visibility = Visibility.Collapsed;
 				LblDeckTitle.Visibility = Visibility.Collapsed;
-				ListViewPlayer.Update(forScreenshot, true, true);
+				ListViewPlayer.Update(forScreenshot, true);
 
 				Height = 34 * ListViewPlayer.Items.Count;
 			}
@@ -69,7 +67,7 @@ namespace Hearthstone_Deck_Tracker
 		public double PlayerLabelsHeight => CanvasPlayerChance.ActualHeight + CanvasPlayerCount.ActualHeight
 			+ LblPlayerFatigue.ActualHeight + LblDeckTitle.ActualHeight + LblWins.ActualHeight + 42;
 
-		public List<Card> PlayerDeck => _game.Player.DisplayCards;
+		public List<Card> PlayerDeck => _game.Player.PlayerCardList;
 
 		public bool ShowToolTip => Config.Instance.WindowCardToolTips;
 
@@ -169,10 +167,14 @@ namespace Hearthstone_Deck_Tracker
 				Topmost = false;
 		}
 
+<<<<<<< HEAD
 		public async void UpdatePlayerCards(List<Card> cards, bool reset)
 		{
 			ListViewPlayer.Update(cards, true, reset);
 		}
+=======
+		public void UpdatePlayerCards(List<Card> cards, bool reset) => ListViewPlayer.Update(cards, reset);
+>>>>>>> refs/remotes/Epix37/master
 
 		[NotifyPropertyChangedInvocator]
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -186,6 +188,12 @@ namespace Hearthstone_Deck_Tracker
 		{
 			Update();
 			UpdatePlayerLayout();
+		}
+
+		public void UpdateCardFrames()
+		{
+			CanvasPlayerChance.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
+			CanvasPlayerCount.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
 		}
 	}
 }

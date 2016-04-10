@@ -142,8 +142,14 @@ namespace Hearthstone_Deck_Tracker.Windows
 			LblDrawChance1.Text = Math.Round(100.0f / cardsLeftInDeck, 1) + "%";
 		}
 
+<<<<<<< HEAD
 		public void UpdatePlayerCards(List<Card> cards, bool reset) => ListViewPlayer.Update(cards, true, reset);
 
 		public void UpdateOpponentCards(List<Card> cards, bool reset) => ListViewOpponent.Update(cards, false, reset);
+=======
+		public void UpdatePlayerCards(List<Card> cards, bool reset) => ListViewPlayer.Update(cards, reset);
+
+		public void UpdateOpponentCards(List<Card> cards, bool reset) => ListViewOpponent.Update(cards, reset);
+>>>>>>> refs/remotes/Epix37/master
 	}
 }

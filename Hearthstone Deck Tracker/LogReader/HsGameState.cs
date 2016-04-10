@@ -76,6 +76,7 @@ namespace Hearthstone_Deck_Tracker.LogReader
 			SetupDone = false;
 			DeterminedPlayers = false;
 			CurrentEntityId = 0;
+<<<<<<< HEAD
 		}
 
 		public void SetCurrentEntity(int id)
@@ -94,6 +95,18 @@ namespace Hearthstone_Deck_Tracker.LogReader
 			if(_game.Entities.TryGetValue(CurrentEntityId, out entity))
 				entity.Info.HasOutstandingTagChanges = false;
 			CurrentEntityId = 0;
+=======
+>>>>>>> refs/remotes/Epix37/master
 		}
+
+		public void SetCurrentEntity(int id)
+		{
+			Entity entity;
+			CurrentEntityId = id;
+			if(_game.Entities.TryGetValue(CurrentEntityId, out entity))
+				entity.Info.HasOutstandingTagChanges = true;
+		}
+
+		public void ResetCurrentEntity() => CurrentEntityId = 0;
 	}
 }

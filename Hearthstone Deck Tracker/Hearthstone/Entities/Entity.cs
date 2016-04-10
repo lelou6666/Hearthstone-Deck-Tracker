@@ -227,8 +227,14 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 		{
 			var card = Database.GetCardFromId(CardId);
 			var cardName = card != null ? card.Name : "";
+<<<<<<< HEAD
 			return $"id={Id}, cardId={CardId}, cardName={cardName}, zonePos={GetTag(GAME_TAG.ZONE_POSITION)},Info={{{Info}}}";
 		}
+=======
+			var hide = Info.Hidden && (IsInHand || IsInDeck);
+			return $"id={Id}, cardId={(hide ? "" : CardId)}, cardName={(hide ? "" : cardName)}, zonePos={GetTag(GAME_TAG.ZONE_POSITION)},Info={{{Info}}}";
+        }
+>>>>>>> refs/remotes/Epix37/master
 	}
 
 	public class EntityInfo
@@ -239,7 +245,10 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 			_entity = entity;
 		}
 
+<<<<<<< HEAD
 		//public string CardId { get; set; }
+=======
+>>>>>>> refs/remotes/Epix37/master
 		public int Turn { get; set; }
 
 		public CardMark CardMark
@@ -269,6 +278,10 @@ namespace Hearthstone_Deck_Tracker.Hearthstone.Entities
 		public bool HasOutstandingTagChanges { get; set; }
 		public int OriginalController { get; set; }
 		public bool Hidden { get; set; }
+<<<<<<< HEAD
+=======
+		public int CostReduction { get; set; }
+>>>>>>> refs/remotes/Epix37/master
 
 		public override string ToString()
 		{

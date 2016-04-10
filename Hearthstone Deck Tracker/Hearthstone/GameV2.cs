@@ -31,8 +31,13 @@ namespace Hearthstone_Deck_Tracker.Hearthstone
 
 		public GameV2()
 		{
+<<<<<<< HEAD
 			Player = new Player(true);
 			Opponent = new Player(false);
+=======
+			Player = new Player(this, true);
+			Opponent = new Player(this, false);
+>>>>>>> refs/remotes/Epix37/master
 			CurrentGameMode = GameMode.None;
 			IsInMenu = true;
 			PossibleArenaCards = new List<Card>();

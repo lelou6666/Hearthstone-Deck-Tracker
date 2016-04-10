@@ -21,8 +21,8 @@ namespace Hearthstone_Deck_Tracker
 
 		public static async Task DetectCurrentDeck()
 		{
-			var deck = DeckList.Instance.ActiveDeckVersion;
-			if(deck == null || !Config.Instance.AutoDeckDetection || deck.DeckId == IgnoredDeckId || _waitingForClass || _waitingForUserInput)
+			var deck = DeckList.Instance.ActiveDeck;
+			if(deck == null || deck.DeckId == IgnoredDeckId || _waitingForClass || _waitingForUserInput)
 				return;
 			if(string.IsNullOrEmpty(Core.Game.Player.Class))
 			{
@@ -31,13 +31,19 @@ namespace Hearthstone_Deck_Tracker
 					await Task.Delay(100);
 				_waitingForClass = false;
 			}
+<<<<<<< HEAD
 			var cardEntites = Core.Game.Player.RevealedCards.Where(x => (x.IsMinion || x.IsSpell || x.IsWeapon) && !x.Info.Created && !x.Info.Stolen).GroupBy(x => x.CardId).ToList();
 			var notFound = cardEntites.Where(x => !deck.Cards.Any(c => c.Id == x.Key && c.Count >= x.Count())).ToList();
+=======
+			var cardEntites = Core.Game.Player.RevealedEntities.Where(x => (x.IsMinion || x.IsSpell || x.IsWeapon) && !x.Info.Created && !x.Info.Stolen).GroupBy(x => x.CardId).ToList();
+			var notFound = cardEntites.Where(x => !deck.GetSelectedDeckVersion().Cards.Any(c => c.Id == x.Key && c.Count >= x.Count())).ToList();
+>>>>>>> refs/remotes/Epix37/master
 			if(notFound.Any())
 			{
 				NotFoundCards = notFound.SelectMany(x => x).Select(x => x.Card).Distinct().ToList();
 				Log.Warn("Cards not found in deck: " + string.Join(", ", NotFoundCards.Select(x => $"{x.Name} ({x.Id})")));
-				await AutoSelectDeck(Core.Game.Player.Class, Core.Game.CurrentGameMode, cardEntites);
+				if(Config.Instance.AutoDeckDetection)
+					await AutoSelectDeck(Core.Game.Player.Class, Core.Game.CurrentGameMode, cardEntites);
 			}
 			else
 				NotFoundCards.Clear();
@@ -49,13 +55,13 @@ namespace Hearthstone_Deck_Tracker
 			_waitingForDraws--;
 			if(_waitingForDraws > 0)
 				return;
-			var validDecks = DeckList.Instance.Decks.Where(x => x.Class == heroClass && !x.Archived).Select(x => x.GetSelectedDeckVersion()).ToList();
+			var validDecks = DeckList.Instance.Decks.Where(x => x.Class == heroClass && !x.Archived).ToList();
 			if(mode == GameMode.Arena)
 				validDecks = validDecks.Where(x => x.IsArenaDeck && x.IsArenaRunCompleted != true).ToList();
 			else if(mode != GameMode.None)
 				validDecks = validDecks.Where(x => !x.IsArenaDeck).ToList();
 			if(validDecks.Count > 1 && cardEntites != null)
-				validDecks = validDecks.Where(x => cardEntites.All(ce => x.Cards.Any(c => c.Id == ce.Key && c.Count >= ce.Count()))).ToList();
+				validDecks = validDecks.Where(x => cardEntites.All(ce => x.GetSelectedDeckVersion().Cards.Any(c => c.Id == ce.Key && c.Count >= ce.Count()))).ToList();
 			if(validDecks.Count == 0)
 			{
 				Log.Info("Could not find matching deck.");
@@ -87,7 +93,7 @@ namespace Hearthstone_Deck_Tracker
 		{
 			decks.Add(new Deck("Use no deck", "", new List<Card>(), new List<string>(), "", "", DateTime.Now, false, new List<Card>(),
 								   SerializableVersion.Default, new List<Deck>(), false, "", Guid.Empty, ""));
-			if(decks.Count == 1 && DeckList.Instance.ActiveDeckVersion != null)
+			if(decks.Count == 1 && DeckList.Instance.ActiveDeck != null)
 			{
 				decks.Add(new Deck("No match - Keep using active deck", "", new List<Card>(), new List<string>(), "", "", DateTime.Now, false,
 								   new List<Card>(), SerializableVersion.Default, new List<Deck>(), false, "", Guid.Empty, ""));
@@ -108,8 +114,8 @@ namespace Hearthstone_Deck_Tracker
 				}
 				else if(selectedDeck.Name == "No match - Keep using active deck")
 				{
-					IgnoredDeckId = DeckList.Instance.ActiveDeckVersion?.DeckId ?? Guid.Empty;
-					Log.Info($"Now ignoring {DeckList.Instance.ActiveDeckVersion?.Name}");
+					IgnoredDeckId = DeckList.Instance.ActiveDeck?.DeckId ?? Guid.Empty;
+					Log.Info($"Now ignoring {DeckList.Instance.ActiveDeck?.Name}");
 					NotFoundCards.Clear();
 				}
 				else
