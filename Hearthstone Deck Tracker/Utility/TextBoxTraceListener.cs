@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Diagnostics;
 using System.Windows.Controls;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker.Utility
 {
@@ -15,14 +19,20 @@ namespace Hearthstone_Deck_Tracker.Utility
 
 		public override void Write(string message)
 		{
-			_textBox.Text += message;
-			_textBox.ScrollToEnd();
+			_textBox.Dispatcher.BeginInvoke((Action)(() =>
+			{
+				_textBox.Text += message + Environment.NewLine;
+				_textBox.ScrollToEnd();
+			}));
 		}
 
 		public override void WriteLine(string message)
 		{
-			_textBox.Text += message + Environment.NewLine;
-			_textBox.ScrollToEnd();
+			_textBox.Dispatcher.BeginInvoke((Action)(() =>
+			{
+				_textBox.Text += message + Environment.NewLine;
+				_textBox.ScrollToEnd();
+			}));
 		}
 
 		public override bool Equals(object obj)
@@ -31,10 +41,6 @@ namespace Hearthstone_Deck_Tracker.Utility
 			return tbtl != null && _textBox.Equals(tbtl._textBox);
 		}
 
-		public override int GetHashCode()
-		{
-			return _textBox.GetHashCode();
-		}
+		public override int GetHashCode() => _textBox.GetHashCode();
 	}
-
 }

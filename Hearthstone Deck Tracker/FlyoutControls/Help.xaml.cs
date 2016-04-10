@@ -1,5 +1,9 @@
-﻿using System.Diagnostics;
+﻿#region
+
+using System.Windows;
 using System.Windows.Navigation;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -13,9 +17,13 @@ namespace Hearthstone_Deck_Tracker
 			InitializeComponent();
 		}
 
-		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+		private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e) => Helper.TryOpenUrl(e.Uri.AbsoluteUri);
+
+		private void ButtonUpdateNotes_OnClick(object sender, RoutedEventArgs e)
 		{
-			Process.Start(e.Uri.AbsoluteUri);
+			Core.MainWindow.FlyoutHelp.IsOpen = false;
+			Core.MainWindow.UpdateNotesControl.LoadUpdateNotes();
+			Core.MainWindow.FlyoutUpdateNotes.IsOpen = true;
 		}
 	}
 }

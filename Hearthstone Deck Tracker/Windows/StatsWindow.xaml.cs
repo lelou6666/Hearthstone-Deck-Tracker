@@ -1,5 +1,9 @@
-﻿using System.ComponentModel;
+﻿#region
+
+using System.ComponentModel;
 using System.Windows;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -22,10 +26,18 @@ namespace Hearthstone_Deck_Tracker
 				Top = Config.Instance.StatsWindowTop.Value;
 		}
 
-
 		protected override void OnClosing(CancelEventArgs e)
 		{
-			if(_appIsClosing) return;
+			if(!double.IsNaN(Left))
+				Config.Instance.StatsWindowLeft = (int)Left;
+			if(!double.IsNaN(Top))
+				Config.Instance.StatsWindowTop = (int)Top;
+			Config.Instance.StatsWindowHeight = (int)Height;
+			Config.Instance.StatsWindowWidth = (int)Width;
+			Config.Save();
+
+			if(_appIsClosing)
+				return;
 			e.Cancel = true;
 			Hide();
 		}
@@ -36,9 +48,6 @@ namespace Hearthstone_Deck_Tracker
 			Close();
 		}
 
-		private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
-			FlyoutGameDetails.Width = Width;
-		}
+		private void MetroWindow_SizeChanged(object sender, SizeChangedEventArgs e) => FlyoutGameDetails.Width = Width;
 	}
 }

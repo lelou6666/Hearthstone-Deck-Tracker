@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace Hearthstone_Deck_Tracker.Enums
+﻿namespace Hearthstone_Deck_Tracker.Enums
 {
 	public enum HeroClass
 	{
 		Druid,
 		Hunter,
 		Mage,
-		Priest,
 		Paladin,
-		Shaman,
+		Priest,
 		Rogue,
+		Shaman,
 		Warlock,
 		Warrior
 	}
@@ -21,10 +19,25 @@ namespace Hearthstone_Deck_Tracker.Enums
 		Druid,
 		Hunter,
 		Mage,
-		Priest,
 		Paladin,
-		Shaman,
+		Priest,
 		Rogue,
+		Shaman,
+		Warlock,
+		Warrior,
+		Archived
+	}
+
+	public enum HeroClassStatsFilter
+	{
+		All,
+		Druid,
+		Hunter,
+		Mage,
+		Paladin,
+		Priest,
+		Rogue,
+		Shaman,
 		Warlock,
 		Warrior
 	}

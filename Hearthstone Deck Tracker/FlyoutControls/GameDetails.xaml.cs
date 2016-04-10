@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
 using Hearthstone_Deck_Tracker.Stats;
+using static Hearthstone_Deck_Tracker.Enums.PlayType;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -12,13 +16,12 @@ namespace Hearthstone_Deck_Tracker
 	/// </summary>
 	public partial class GameDetails
 	{
-		private readonly bool _initialized;
 		private GameStats _gameStats;
+		private bool _initialized;
 
 		public GameDetails()
 		{
 			InitializeComponent();
-			_initialized = true;
 		}
 
 		public void SetGame(GameStats gameStats)
@@ -27,32 +30,35 @@ namespace Hearthstone_Deck_Tracker
 			ReloadGameStats();
 		}
 
-
 		private void ReloadGameStats()
 		{
-			if(_gameStats != null)
+			if(_gameStats == null)
+				return;
+			var needSeparator = false;
+			DataGridDetails.Items.Clear();
+			foreach(var turn in _gameStats.TurnStats)
 			{
-				var needSeparator = false;
-				DataGridDetails.Items.Clear();
-				foreach(var turn in _gameStats.TurnStats)
+				if(needSeparator)
 				{
-					if(needSeparator)
-					{
-						DataGridDetails.Items.Add(new GameDetailItem());
-						needSeparator = false;
-					}
-					foreach(var play in turn.Plays.Where(play => play != null))
-					{
-						if((play.Type == PlayType.PlayerPlay || play.Type == PlayType.PlayerHandDiscard || play.Type == PlayType.PlayerHeroPower || play.Type == PlayType.PlayerSecretPlayed) && !Config.Instance.GameDetails.ShowPlayerPlay
-						   || (play.Type == PlayType.PlayerDraw || play.Type == PlayType.PlayerGet || play.Type == PlayType.PlayerDeckDiscard) && !Config.Instance.GameDetails.ShowPlayerDraw
-						   || play.Type == PlayType.PlayerMulligan && !Config.Instance.GameDetails.ShowPlayerMulligan
-						   || (play.Type == PlayType.OpponentPlay || play.Type == PlayType.OpponentSecretTriggered || play.Type == PlayType.OpponentHandDiscard || play.Type == PlayType.OpponentHeroPower || play.Type == PlayType.OpponentSecretPlayed) && !Config.Instance.GameDetails.ShowOpponentPlay
-						   || (play.Type == PlayType.OpponentDraw || play.Type == PlayType.OpponentGet || play.Type == PlayType.OpponentBackToHand || play.Type == PlayType.OpponentDeckDiscard) && !Config.Instance.GameDetails.ShowOpponentDraw
-						   || play.Type == PlayType.OpponentMulligan && !Config.Instance.GameDetails.ShowOpponentMulligan)
-							continue;
-						needSeparator = true;
-						DataGridDetails.Items.Add(new GameDetailItem(play, turn.Turn));
-					}
+					DataGridDetails.Items.Add(new GameDetailItem());
+					needSeparator = false;
+				}
+				foreach(var play in turn.Plays.Where(play => play != null))
+				{
+					if((play.Type == PlayerPlay || play.Type == PlayerHandDiscard || play.Type == PlayerHeroPower
+						|| play.Type == PlayerSecretPlayed) && !Config.Instance.GameDetails.ShowPlayerPlay
+					   || (play.Type == PlayerDraw || play.Type == PlayerGet || play.Type == PlayerDeckDiscard)
+					   && !Config.Instance.GameDetails.ShowPlayerDraw
+					   || play.Type == PlayerMulligan && !Config.Instance.GameDetails.ShowPlayerMulligan
+					   || (play.Type == OpponentPlay || play.Type == OpponentSecretTriggered
+						   || play.Type == OpponentHandDiscard || play.Type == OpponentHeroPower
+						   || play.Type == OpponentSecretPlayed) && !Config.Instance.GameDetails.ShowOpponentPlay
+					   || (play.Type == OpponentDraw || play.Type == OpponentGet || play.Type == OpponentBackToHand
+						   || play.Type == OpponentDeckDiscard) && !Config.Instance.GameDetails.ShowOpponentDraw
+					   || play.Type == OpponentMulligan && !Config.Instance.GameDetails.ShowOpponentMulligan)
+						continue;
+					needSeparator = true;
+					DataGridDetails.Items.Add(new GameDetailItem(play, turn.Turn));
 				}
 			}
 		}
@@ -65,11 +71,13 @@ namespace Hearthstone_Deck_Tracker
 			CheckboxOpponentPlay.IsChecked = Config.Instance.GameDetails.ShowOpponentPlay;
 			CheckboxPlayerMulligan.IsChecked = Config.Instance.GameDetails.ShowPlayerMulligan;
 			CheckboxOpponentMulligan.IsChecked = Config.Instance.GameDetails.ShowOpponentMulligan;
+			_initialized = true;
 		}
 
 		private void CheckboxPlayerPlay_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerPlay = true;
 			Config.Save();
 			ReloadGameStats();
@@ -77,7 +85,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxPlayerPlay_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerPlay = false;
 			Config.Save();
 			ReloadGameStats();
@@ -85,7 +94,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentPlay_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentPlay = true;
 			Config.Save();
 			ReloadGameStats();
@@ -93,7 +103,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentPlay_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentPlay = false;
 			Config.Save();
 			ReloadGameStats();
@@ -101,7 +112,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxPlayerDraw_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerDraw = true;
 			Config.Save();
 			ReloadGameStats();
@@ -109,7 +121,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxPlayerDraw_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerDraw = false;
 			Config.Save();
 			ReloadGameStats();
@@ -117,7 +130,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentDraw_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentDraw = true;
 			Config.Save();
 			ReloadGameStats();
@@ -125,7 +139,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentDraw_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentDraw = false;
 			Config.Save();
 			ReloadGameStats();
@@ -133,7 +148,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxPlayerMulligan_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerMulligan = true;
 			Config.Save();
 			ReloadGameStats();
@@ -141,7 +157,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxPlayerMulligan_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowPlayerMulligan = false;
 			Config.Save();
 			ReloadGameStats();
@@ -149,7 +166,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentMulligan_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentMulligan = true;
 			Config.Save();
 			ReloadGameStats();
@@ -157,7 +175,8 @@ namespace Hearthstone_Deck_Tracker
 
 		private void CheckboxOpponentMulligan_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			Config.Instance.GameDetails.ShowOpponentMulligan = false;
 			Config.Save();
 			ReloadGameStats();
@@ -167,61 +186,39 @@ namespace Hearthstone_Deck_Tracker
 		{
 			var ignoreCards = new List<Card>();
 			var deck = new Deck {Class = _gameStats.OpponentHero};
-			foreach(var turn in _gameStats.TurnStats)
+			foreach(var play in _gameStats.TurnStats.SelectMany(turn => turn.Plays))
 			{
-				foreach(var play in turn.Plays)
+				switch(play.Type)
 				{
-					if(play.Type == PlayType.OpponentPlay || play.Type == PlayType.OpponentDeckDiscard || play.Type == PlayType.OpponentHandDiscard || play.Type == PlayType.OpponentSecretTriggered)
+					case OpponentPlay:
+					case OpponentDeckDiscard:
+					case OpponentHandDiscard:
+					case OpponentSecretTriggered:
 					{
-						var card = Game.GetCardFromId(play.CardId);
-						if(Game.IsActualCard(card))
-						{
-							if(ignoreCards.Contains(card))
-							{
-								ignoreCards.Remove(card);
-								continue;
-							}
-							var deckCard = deck.Cards.FirstOrDefault(c => c.Id == card.Id);
-							if(deckCard != null)
-								deckCard.Count++;
-							else deck.Cards.Add(card);
-						}
+						var card = Database.GetCardFromId(play.CardId);
+						if(!Database.IsActualCard(card))
+							continue;
+						if(ignoreCards.Remove(card))
+							continue;
+						var deckCard = deck.Cards.FirstOrDefault(c => c.Id == card.Id);
+						if(deckCard != null)
+							deckCard.Count++;
+						else
+							deck.Cards.Add(card);
 					}
-					else if(play.Type == PlayType.OpponentBackToHand)
+						break;
+					case OpponentBackToHand:
 					{
-						var card = Game.GetCardFromId(play.CardId);
-						if(Game.IsActualCard(card))
+						var card = Database.GetCardFromId(play.CardId);
+						if(Database.IsActualCard(card))
 							ignoreCards.Add(card);
 					}
+						break;
 				}
 			}
-			Helper.MainWindow.SetNewDeck(deck);
-			//Helper.MainWindow.TabControlTracker.SelectedIndex = 1;
-			Helper.MainWindow.FlyoutGameDetails.IsOpen = false;
-			Helper.MainWindow.FlyoutDeckStats.IsOpen = false;
-		}
-
-		public class GameDetailItem
-		{
-			public GameDetailItem(TurnStats.Play play, int turn)
-			{
-				Turn = turn.ToString();
-				Player = play.Type.ToString().StartsWith("Player") ? "Player" : "Opponent";
-				Action = play.Type.ToString().Replace("Player", string.Empty).Replace("Opponent", string.Empty);
-				Card = Game.GetCardFromId(play.CardId);
-
-				if(play.Type == PlayType.PlayerHandDiscard || play.Type == PlayType.OpponentHandDiscard && (Card != null && Card.Type == "Spell"))
-					Action = "Play/Discard";
-			}
-
-			public GameDetailItem()
-			{
-			}
-
-			public string Turn { get; set; }
-			public string Player { get; set; }
-			public string Action { get; set; }
-			public Card Card { get; set; }
+			Core.MainWindow.SetNewDeck(deck);
+			Core.MainWindow.FlyoutGameDetails.IsOpen = false;
+			Core.MainWindow.FlyoutDeckStats.IsOpen = false;
 		}
 	}
 }

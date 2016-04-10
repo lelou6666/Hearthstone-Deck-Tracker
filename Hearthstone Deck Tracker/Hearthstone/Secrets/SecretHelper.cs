@@ -1,35 +1,35 @@
+#region
+
 using System.Collections.Generic;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
 	public class SecretHelper
 	{
-		public int Id { get; private set; }
-		public bool[] PossibleSecrets { get; set; }
-		public SecretHelper(HeroClass heroClass, int id)
+		public SecretHelper(HeroClass heroClass, int id, int turnPlayed)
 		{
 			Id = id;
-			PossibleSecrets = new bool[GetMaxSecretCount(heroClass)];
+			TurnPlayed = turnPlayed;
+			HeroClass = heroClass;
+			PossibleSecrets = new Dictionary<string, bool>();
 
-			for(int i = 0; i < PossibleSecrets.Length; i++)
-				PossibleSecrets[i] = true;
+			foreach(var cardId in GetSecretIds(heroClass))
+				PossibleSecrets[cardId] = true;
 		}
+
+		public int Id { get; private set; }
+		public int TurnPlayed { get; private set; }
+		public HeroClass HeroClass { get; private set; }
+		public Dictionary<string, bool> PossibleSecrets { get; set; }
+
 
 		public static int GetMaxSecretCount(HeroClass heroClass)
 		{
-			switch(heroClass)
-			{
-				case HeroClass.Hunter:
-					return CardIds.SecretIdsHunter.Count;
-				case HeroClass.Mage:
-					return CardIds.SecretIdsMage.Count;
-				case HeroClass.Paladin:
-					return CardIds.SecretIdsPaladin.Count;
-				default:
-					return 0;
-			}
+			return GetSecretIds(heroClass).Count;
 		}
 
 		public static List<string> GetSecretIds(HeroClass heroClass)
@@ -37,28 +37,14 @@ namespace Hearthstone_Deck_Tracker
 			switch(heroClass)
 			{
 				case HeroClass.Hunter:
-					return CardIds.SecretIdsHunter;
+					return CardIds.Secrets.Hunter.All;
 				case HeroClass.Mage:
-					return CardIds.SecretIdsMage;
+					return CardIds.Secrets.Mage.All;
 				case HeroClass.Paladin:
-					return CardIds.SecretIdsPaladin;
+					return CardIds.Secrets.Paladin.All;
 				default:
 					return new List<string>();
 			}
-		}
-
-		public static int GetSecretIndex(HeroClass heroClass, string cardId)
-		{
-			switch(heroClass)
-			{
-				case HeroClass.Hunter:
-					return CardIds.SecretIdsHunter.IndexOf(cardId);
-				case HeroClass.Mage:
-					return CardIds.SecretIdsMage.IndexOf(cardId);
-				case HeroClass.Paladin:
-					return CardIds.SecretIdsPaladin.IndexOf(cardId);
-			}
-			return -1;
 		}
 	}
 }

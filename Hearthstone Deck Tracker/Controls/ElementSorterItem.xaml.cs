@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Windows;
-using Hearthstone_Deck_Tracker.Enums;
+using static Hearthstone_Deck_Tracker.Enums.SortDirection;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -9,10 +13,10 @@ namespace Hearthstone_Deck_Tracker
 	/// </summary>
 	public partial class ElementSorterItem
 	{
-		public readonly string ItemName;
 		private readonly bool _initialized;
 		private readonly bool _isPlayerList;
 		private readonly Action<bool> _setConfigValue;
+		public readonly string ItemName;
 
 		public ElementSorterItem(string name, bool isChecked, Action<bool> setConfigValue, bool isPlayerList)
 		{
@@ -29,15 +33,15 @@ namespace Hearthstone_Deck_Tracker
 		{
 			if(_isPlayerList)
 			{
-				Helper.MainWindow.Options.ElementSorterPlayer.MoveItem(this, SortDirection.Up);
-				Helper.MainWindow.Overlay.UpdatePlayerLayout();
-				Helper.MainWindow.PlayerWindow.UpdatePlayerLayout();
+				Core.MainWindow.Options.OptionsOverlayPlayer.ElementSorterPlayer.MoveItem(this, Up);
+				Core.Overlay.UpdatePlayerLayout();
+				Core.Windows.PlayerWindow.UpdatePlayerLayout();
 			}
 			else
 			{
-				Helper.MainWindow.Options.ElementSorterOpponent.MoveItem(this, SortDirection.Up);
-				Helper.MainWindow.Overlay.UpdateOpponentLayout();
-				Helper.MainWindow.OpponentWindow.UpdateOpponentLayout();
+				Core.MainWindow.Options.OptionsOverlayOpponent.ElementSorterOpponent.MoveItem(this, Up);
+				Core.Overlay.UpdateOpponentLayout();
+				Core.Windows.OpponentWindow.UpdateOpponentLayout();
 			}
 		}
 
@@ -45,40 +49,54 @@ namespace Hearthstone_Deck_Tracker
 		{
 			if(_isPlayerList)
 			{
-				Helper.MainWindow.Options.ElementSorterPlayer.MoveItem(this, SortDirection.Down);
-				Helper.MainWindow.Overlay.UpdatePlayerLayout();
-				Helper.MainWindow.PlayerWindow.UpdatePlayerLayout();
+				Core.MainWindow.Options.OptionsOverlayPlayer.ElementSorterPlayer.MoveItem(this, Down);
+				Core.Overlay.UpdatePlayerLayout();
+				Core.Windows.PlayerWindow.UpdatePlayerLayout();
 			}
 			else
 			{
-				Helper.MainWindow.Options.ElementSorterOpponent.MoveItem(this, SortDirection.Down);
-				Helper.MainWindow.Overlay.UpdateOpponentLayout();
-				Helper.MainWindow.OpponentWindow.UpdateOpponentLayout();
+				Core.MainWindow.Options.OptionsOverlayOpponent.ElementSorterOpponent.MoveItem(this, Down);
+				Core.Overlay.UpdateOpponentLayout();
+				Core.Windows.OpponentWindow.UpdateOpponentLayout();
 			}
 		}
 
 		private void CheckBox_Checked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			_setConfigValue(true);
 			Config.Save();
-			Helper.MainWindow.Overlay.Update(false);
+			Core.Overlay.Update(false);
 			if(_isPlayerList)
-				Helper.MainWindow.PlayerWindow.Update();
+			{
+				Core.Windows.PlayerWindow.Update();
+				Core.Windows.PlayerWindow.UpdatePlayerLayout();
+			}
 			else
-				Helper.MainWindow.OpponentWindow.Update();
+			{
+				Core.Windows.OpponentWindow.Update();
+				Core.Windows.OpponentWindow.UpdateOpponentLayout();
+			}
 		}
 
 		private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if(!_initialized) return;
+			if(!_initialized)
+				return;
 			_setConfigValue(false);
 			Config.Save();
-			Helper.MainWindow.Overlay.Update(false);
+			Core.Overlay.Update(false);
 			if(_isPlayerList)
-				Helper.MainWindow.PlayerWindow.Update();
+			{
+				Core.Windows.PlayerWindow.Update();
+				Core.Windows.PlayerWindow.UpdatePlayerLayout();
+			}
 			else
-				Helper.MainWindow.OpponentWindow.Update();
+			{
+				Core.Windows.OpponentWindow.Update();
+				Core.Windows.OpponentWindow.UpdateOpponentLayout();
+			}
 		}
 	}
 }

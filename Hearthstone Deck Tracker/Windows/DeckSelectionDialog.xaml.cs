@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Hearthstone_Deck_Tracker.Controls.DeckPicker;
+using Hearthstone_Deck_Tracker.Controls.DeckPicker.DeckPickerItemLayouts;
 using Hearthstone_Deck_Tracker.Hearthstone;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -18,15 +24,16 @@ namespace Hearthstone_Deck_Tracker
 			InitializeComponent();
 
 			WindowStartupLocation = WindowStartupLocation.CenterScreen;
-
-			DeckPickerList.Items.Clear();
+			ListViewDecks.Items.Clear();
 			foreach(var deck in decks.OrderByDescending(d => d.Name))
-				DeckPickerList.Items.Add(deck);
+				ListViewDecks.Items.Add(new DeckPickerItem(deck, typeof(DeckPickerItemLayoutMinimal)));
 		}
 
-		private void DeckPickerList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ListViewDecks_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			SelectedDeck = DeckPickerList.SelectedItem as Deck;
+			var item = ListViewDecks.SelectedItem as DeckPickerItem;
+			if(item != null)
+				SelectedDeck = item.Deck;
 			Close();
 		}
 	}

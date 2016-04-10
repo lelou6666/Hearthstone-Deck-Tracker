@@ -1,20 +1,24 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows;
 using System.Xml.Serialization;
 using Hearthstone_Deck_Tracker.Enums;
-using MahApps.Metro.Controls.Dialogs;
+using Hearthstone_Deck_Tracker.Hearthstone;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker.Stats
 {
 	public class DeckStats
 	{
+		public Guid DeckId;
+
 		[XmlArray(ElementName = "Games")]
 		[XmlArrayItem(ElementName = "Game")]
 		public List<GameStats> Games;
 
+		public string HearthStatsDeckId;
 		public string Name;
 
 		public DeckStats()
@@ -22,20 +26,22 @@ namespace Hearthstone_Deck_Tracker.Stats
 			Games = new List<GameStats>();
 		}
 
-		public DeckStats(string name)
+		public DeckStats(Deck deck)
 		{
-			Name = name;
+			Name = deck.Name;
 			Games = new List<GameStats>();
+			HearthStatsDeckId = deck.HearthStatsId;
+			DeckId = deck.DeckId;
 		}
 
-		public void AddGameResult(GameResult result, string opponentHero, string playerHero)
-		{
-			Games.Add(new GameStats(result, opponentHero, playerHero));
-		}
+		[XmlIgnore]
+		public bool HasHearthStatsDeckId => !string.IsNullOrEmpty(HearthStatsDeckId);
 
-		public void AddGameResult(GameStats gameStats)
-		{
-			Games.Add(gameStats);
-		}
-	}	
+		public void AddGameResult(GameResult result, string opponentHero, string playerHero) => Games.Add(new GameStats(result, opponentHero, playerHero));
+
+		public void AddGameResult(GameStats gameStats) => Games.Add(gameStats);
+
+		public bool BelongsToDeck(Deck deck) => HasHearthStatsDeckId && deck.HasHearthStatsId
+													? HearthStatsDeckId.Equals(deck.HearthStatsIdForUploading) : DeckId == deck.DeckId;
+	}
 }

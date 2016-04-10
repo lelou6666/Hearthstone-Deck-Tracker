@@ -3,6 +3,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:local="clr-namespace:Hearthstone_Deck_Tracker"
                       xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+<<<<<<< HEAD
                       Title="{lex:Loc DeckSelectionDialog_TITLE}" Height="265" Width="450" Topmost="True" WindowStyle="ToolWindow"
                       Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                       BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1"
@@ -19,6 +20,20 @@
                           Margin="0,34,0,0">
         </local:DeckPicker>
         <Label Content="{lex:Loc DeckSelectionDialog_SELECTYOURDECK}" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14"
+=======
+                      Title="Wrong deck detected" Height="265" Width="450" Topmost="True" WindowStyle="ToolWindow"
+                      BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1">
+    <Grid>
+        <ListView Name="ListViewDecks"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListViewDecks_OnSelectionChanged" SelectionMode="Single" BorderThickness="1" Margin="0,34,0,0">
+            <ListView.Resources>
+                <Style TargetType="GridViewColumnHeader">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+            </ListView.Resources>
+        </ListView>
+        <Label Content="Select your deck" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="14"
+>>>>>>> refs/remotes/Epix37/master
                FontWeight="Bold" Margin="10,0,0,0" />
     </Grid>
 </controls:MetroWindow>

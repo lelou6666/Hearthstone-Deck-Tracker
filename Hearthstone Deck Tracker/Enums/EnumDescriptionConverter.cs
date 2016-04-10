@@ -1,10 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 using Hearthstone_Deck_Tracker.Utility;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker.Enums
 {
@@ -14,25 +17,33 @@ namespace Hearthstone_Deck_Tracker.Enums
 		{
 			if(value == null)
 				return DependencyProperty.UnsetValue;
-			return GetDescription((Enum)value);
+			try
+			{
+				return GetDescription((Enum)value);
+			}
+			catch(Exception)
+			{
+				return DependencyProperty.UnsetValue;
+			}
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return Enum.ToObject(targetType, value);
-		}
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Enum.ToObject(targetType, value);
 
-		public string GetDescription(Enum en)
+		public static string GetDescription(Enum en)
 		{
-			Type type = en.GetType();
-			MemberInfo[] memInfo = type.GetMember(en.ToString());
+			var type = en.GetType();
+			var memInfo = type.GetMember(en.ToString());
 			if(memInfo.Length > 0)
 			{
-				object[] attrs = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+				var attrs = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
 				if(attrs.Length > 0)
+<<<<<<< HEAD
 				{
 					return Lang.GetLocalizedString(((DescriptionAttribute)attrs[0]).Description);
 				}
+=======
+					return ((DescriptionAttribute)attrs[0]).Description;
+>>>>>>> refs/remotes/Epix37/master
 			}
 			return en.ToString();
 		}

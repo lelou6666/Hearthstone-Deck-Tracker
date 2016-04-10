@@ -1,128 +1,137 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Media;
+using System.Threading.Tasks;
 using System.Timers;
 using Hearthstone_Deck_Tracker.Enums;
+using Hearthstone_Deck_Tracker.Hearthstone;
+using Hearthstone_Deck_Tracker.Utility.Logging;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
-	public class TimerEventArgs : EventArgs
+	internal class TimerState
 	{
-		public TimerEventArgs(int seconds, int playerSeconds, int opponentSeconds, bool running, Turn turn)
+		public TimerState(double seconds, int playerSeconds, int opponentSeconds)
 		{
 			Seconds = seconds;
-			Running = running;
 			PlayerSeconds = playerSeconds;
 			OpponentSeconds = opponentSeconds;
-			CurrentTurn = turn;
 		}
 
-		public int Seconds { get; private set; }
+		public double Seconds { get; private set; }
 		public int PlayerSeconds { get; private set; }
 		public int OpponentSeconds { get; private set; }
-		public bool Running { get; private set; }
-		public Turn CurrentTurn { get; private set; }
 	}
 
 	internal class TurnTimer
 	{
-		public Turn CurrentTurn;
-		private bool _opponentMulliganed;
-		private bool _playerMulliganed;
-		private Timer _timer;
-		private int _turnTime;
+		private readonly Timer _timer = new Timer(1000) {AutoReset = true};
+		private GameV2 _game;
 
 		private TurnTimer()
 		{
+			_timer.Elapsed += TimerOnElapsed;
 		}
 
-		public int Seconds { get; private set; }
+		static TurnTimer()
+		{
+		}
+
+		public double Seconds { get; private set; }
 		public int PlayerSeconds { get; private set; }
 		public int OpponentSeconds { get; private set; }
 
+		private bool IsPlayersTurn => _game.PlayerEntity?.HasTag(GAME_TAG.CURRENT_PLAYER) ?? false;
 
-		public static TurnTimer Instance { get; private set; }
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="turnTime">Time of a turn in seconds</param>
-		public static void Create(int turnTime)
-		{
-			Instance = new TurnTimer {Seconds = turnTime, PlayerSeconds = 0, OpponentSeconds = 0, _turnTime = turnTime, _timer = new Timer(1000) {AutoReset = true, Enabled = true}};
-			Instance._timer.Elapsed += Instance.TimerOnElapsed;
-			Instance._timer.Stop();
-		}
+		public static TurnTimer Instance { get; } = new TurnTimer();
 
 		private void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
 		{
-			if(Seconds > 0)
-				Seconds--;
-			if(_playerMulliganed && _opponentMulliganed)
+			Seconds--;
+			if(_game.IsMulliganDone)
 			{
-				if(CurrentTurn == Turn.Player)
+				if(IsPlayersTurn)
 					PlayerSeconds++;
 				else
 					OpponentSeconds++;
 			}
-			TimerTick(this, new TimerEventArgs(Seconds, PlayerSeconds, OpponentSeconds, true, CurrentTurn));
+			TimerTick(new TimerState(Seconds, PlayerSeconds, OpponentSeconds));
 		}
 
-		public void Restart()
+		public async Task Start(GameV2 game)
 		{
-			Seconds = _turnTime;
-			_timer.Stop();
+			if(game == null)
+			{
+				Log.Warn("Could not start timer, game is null");
+				return;
+			}
+			Log.Info("Starting turn timer");
+			if(_game != null)
+			{
+				Log.Warn("Turn timer is already running");
+				return;
+			}
+			_game = game;
+			PlayerSeconds = 0;
+			OpponentSeconds = 0;
+			Seconds = 75;
+			if(game.PlayerEntity == null)
+				Log.Warn("Waiting for player entity");
+			while(game.PlayerEntity == null)
+				await Task.Delay(100);
+			if(game.OpponentEntity == null)
+				Log.Warn("Waiting for player entity");
+			while(game.OpponentEntity == null)
+				await Task.Delay(100);
+			TimerTick(new TimerState(Seconds, PlayerSeconds, OpponentSeconds));
 			_timer.Start();
-			if((!_playerMulliganed && _opponentMulliganed)
-			   || (!_opponentMulliganed && _playerMulliganed)
-			   || (!_opponentMulliganed && !_playerMulliganed && Seconds < 85))
-				_playerMulliganed = _opponentMulliganed = true;
-
-			TimerTick(this, new TimerEventArgs(Seconds, PlayerSeconds, OpponentSeconds, true, CurrentTurn));
 		}
 
 		public void Stop()
 		{
+			if(_game == null)
+				return;
+			Log.Info("Stopping turn timer");
 			_timer.Stop();
-			PlayerSeconds = 0;
-			OpponentSeconds = 0;
-			_playerMulliganed = false;
-			_opponentMulliganed = false;
-			TimerTick(this, new TimerEventArgs(Seconds, PlayerSeconds, OpponentSeconds, false, CurrentTurn));
+			_game = null;
 		}
 
-		public void SetCurrentPlayer(Turn turn)
+		private void TimerTick(TimerState timerState)
 		{
-			CurrentTurn = turn;
+			Core.Overlay.Dispatcher.BeginInvoke(new Action(() => Core.Overlay.UpdateTurnTimer(timerState)));
+			Core.Windows.TimerWindow.Dispatcher.BeginInvoke(new Action(() => Core.Windows.TimerWindow.Update(timerState)));
+			if(IsPlayersTurn)
+				CheckForTimerAlarm();
 		}
 
-		public void MulliganDone(Turn turn)
+		private void CheckForTimerAlarm()
 		{
-			if(turn.Equals(Turn.Player))
-				_playerMulliganed = true;
-			else if(turn.Equals(Turn.Opponent))
-				_opponentMulliganed = true;
+			if(!Config.Instance.TimerAlert || Seconds != Config.Instance.TimerAlertSeconds)
+				return;
+			SystemSounds.Asterisk.Play();
+			User32.FlashHs();
 		}
 
-
-		private void TimerTick(TurnTimer sender, TimerEventArgs timerEventArgs)
+		public void SetPlayer(ActivePlayer player)
 		{
-			Helper.MainWindow.Overlay.Dispatcher.BeginInvoke(
-				new Action(() => Helper.MainWindow.Overlay.UpdateTurnTimer(timerEventArgs)));
-			Helper.MainWindow.TimerWindow.Dispatcher.BeginInvoke(
-				new Action(() => Helper.MainWindow.TimerWindow.Update(timerEventArgs)));
-
-            if (CurrentTurn == Turn.Player)
-                CheckForTimerAlarm();
+			if(_game == null)
+			{
+				Seconds = 75;
+				Log.Warn("Set timer to 75, game is null");
+				return;
+			}
+			if(player == ActivePlayer.Player && _game.PlayerEntity != null)
+				Seconds = _game.PlayerEntity.HasTag(GAME_TAG.TIMEOUT) ? _game.PlayerEntity.GetTag(GAME_TAG.TIMEOUT) : double.PositiveInfinity;
+			else if(player == ActivePlayer.Opponent && _game.OpponentEntity != null)
+				Seconds = _game.OpponentEntity.HasTag(GAME_TAG.TIMEOUT) ? _game.OpponentEntity.GetTag(GAME_TAG.TIMEOUT) : double.PositiveInfinity;
+			else
+			{
+				Seconds = 75;
+				Log.Warn("Set timer to 75, both player entities are null");
+			}
 		}
-
-        private void CheckForTimerAlarm()
-        {
-            if (Config.Instance.TimerAlert)
-                if (Seconds == Config.Instance.TimerAlertSeconds)
-                {
-                    SystemSounds.Asterisk.Play();
-                    User32.FlashHs();
-                }
-        }
 	}
 }

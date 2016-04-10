@@ -1,5 +1,13 @@
-﻿using System.Windows.Controls;
+﻿#region
+
+using System.Windows;
+using System.Windows.Controls;
 using Hearthstone_Deck_Tracker.Hearthstone;
+using Hearthstone_Deck_Tracker.HearthStats.API;
+using Hearthstone_Deck_Tracker.Utility.Extensions;
+using Hearthstone_Deck_Tracker.Utility.Logging;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -9,6 +17,7 @@ namespace Hearthstone_Deck_Tracker
 	public partial class DeckNotes
 	{
 		private Deck _currentDeck;
+		private bool _noteChanged;
 
 		public DeckNotes()
 		{
@@ -17,13 +26,36 @@ namespace Hearthstone_Deck_Tracker
 
 		public void SetDeck(Deck deck)
 		{
+			SaveDeck();
 			_currentDeck = deck;
 			Textbox.Text = deck.Note;
+			_noteChanged = false;
+			BtnSave.IsEnabled = false;
 		}
 
 		private void Textbox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			_currentDeck.Note = Textbox.Text;
+			_currentDeck.Edited();
+			_noteChanged = true;
+			BtnSave.IsEnabled = true;
+		}
+
+		private void BtnSave_Click(object sender, RoutedEventArgs e) => SaveDeck();
+
+		public void SaveDeck()
+		{
+			if(!_noteChanged || _currentDeck == null)
+				return;
+			DeckList.Save();
+			if(Config.Instance.HearthStatsAutoUploadNewDecks && HearthStatsAPI.IsLoggedIn)
+			{
+				Log.Info($"auto updating {_currentDeck} deck");
+				HearthStatsManager.UpdateDeckAsync(_currentDeck, background: true).Forget();
+			}
+			_noteChanged = false;
+			BtnSave.IsEnabled = false;
+			Core.MainWindow.DeckPickerList.UpdateDecks();
 		}
 	}
 }

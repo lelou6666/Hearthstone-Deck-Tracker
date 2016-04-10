@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using Hearthstone_Deck_Tracker.Enums;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker.Stats
 {
@@ -17,10 +21,7 @@ namespace Hearthstone_Deck_Tracker.Stats
 			Plays = new List<Play>();
 		}
 
-		public void AddPlay(PlayType type, string cardId)
-		{
-			Plays.Add(new Play(type, cardId));
-		}
+		public void AddPlay(PlayType type, string cardId) => Plays.Add(new Play(type, cardId));
 
 		public class Play
 		{

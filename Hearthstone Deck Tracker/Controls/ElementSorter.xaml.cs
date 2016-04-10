@@ -1,5 +1,9 @@
-﻿using System.Linq;
+﻿#region
+
+using System.Linq;
 using Hearthstone_Deck_Tracker.Enums;
+
+#endregion
 
 namespace Hearthstone_Deck_Tracker
 {
@@ -15,10 +19,7 @@ namespace Hearthstone_Deck_Tracker
 			InitializeComponent();
 		}
 
-		public void AddItem(ElementSorterItem item)
-		{
-			StackPanel.Children.Add(item);
-		}
+		public void AddItem(ElementSorterItem item) => StackPanel.Children.Add(item);
 
 		public void MoveItem(ElementSorterItem item, SortDirection direction)
 		{

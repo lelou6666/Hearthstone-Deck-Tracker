@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hearthstone_Deck_Tracker</RootNamespace>
-    <AssemblyName>Hearthstone Deck Tracker</AssemblyName>
+    <AssemblyName>HearthstoneDeckTracker</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,17 +57,41 @@
   <PropertyGroup>
     <ApplicationIcon>Images\HearthstoneDeckTracker.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="AForge, Version=2.2.5.0, Culture=neutral, PublicKeyToken=c1db6ff4eaa06aeb, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.2.2.5\lib\AForge.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AForge.Imaging, Version=2.2.5.0, Culture=neutral, PublicKeyToken=ba8ddea9676ca48b, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Imaging.2.2.5\lib\AForge.Imaging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AForge.Math, Version=2.2.5.0, Culture=neutral, PublicKeyToken=abba2e25397ee8c9, processorArchitecture=MSIL">
+      <HintPath>..\packages\AForge.Math.2.2.5\lib\AForge.Math.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Garlic">
+      <HintPath>..\packages\Garlic.2.1.0.0\lib\net35\Garlic.dll</HintPath>
+    </Reference>
+    <Reference Include="De.TorstenMandelkow.MetroChart, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\De.TorstenMandelkow.MetroChart.dll</HintPath>
+    </Reference>
+    <Reference Include="HearthDb">
+      <HintPath>..\lib\HearthDb.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="MahApps.Metro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+    <Reference Include="MahApps.Metro, Version=1.1.2.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\MahApps.Metro.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
@@ -74,11 +99,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Printing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.0.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.1.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -105,11 +132,48 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="API\ActionList.cs" />
+    <Compile Include="API\DeckManagerEvents.cs" />
+    <Compile Include="API\Core.cs" />
+    <Compile Include="API\GameEvents.cs" />
+    <Compile Include="API\LogEvents.cs" />
+    <Compile Include="API\Overlay.cs" />
+    <Compile Include="Controls\AnimatedCard.xaml.cs">
+      <DependentUpon>AnimatedCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AnimatedCardList.xaml.cs">
+      <DependentUpon>AnimatedCardList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DeckPickerItem.xaml.cs">
-      <DependentUpon>DeckPickerItem.xaml</DependentUpon>
+    <Compile Include="Controls\CardMarker.xaml.cs">
+      <DependentUpon>CardMarker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CardToolTipControl.xaml.cs">
+      <DependentUpon>CardToolTipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ChartWinsByClass.xaml.cs">
+      <DependentUpon>ChartWinsByClass.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DateConverter.cs" />
+    <Compile Include="Controls\DeckPicker\DeckPickerClassItem.xaml.cs">
+      <DependentUpon>DeckPickerClassItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayout1.xaml.cs">
+      <DependentUpon>DeckPickerItemLayout1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayout2.xaml.cs">
+      <DependentUpon>DeckPickerItemLayout2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayoutLegacy.xaml.cs">
+      <DependentUpon>DeckPickerItemLayoutLegacy.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayoutMinimal.xaml.cs">
+      <DependentUpon>DeckPickerItemLayoutMinimal.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckVersionChange.xaml.cs">
+      <DependentUpon>DeckVersionChange.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ElementSorter.xaml.cs">
       <DependentUpon>ElementSorter.xaml</DependentUpon>
@@ -117,15 +181,299 @@
     <Compile Include="Controls\ElementSorterItem.xaml.cs">
       <DependentUpon>ElementSorterItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DeckPicker\MarginConverter.cs" />
+    <Compile Include="Controls\Stats\ArenaRewards.xaml.cs">
+      <DependentUpon>ArenaRewards.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaAdvancedCharts.xaml.cs">
+      <DependentUpon>ArenaAdvancedCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaClassStats.xaml.cs">
+      <DependentUpon>ArenaClassStats.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaRuns.xaml.cs">
+      <DependentUpon>ArenaRuns.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaRewardsSummary.xaml.cs">
+      <DependentUpon>ArenaRewardsSummary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaRunsTable.xaml.cs">
+      <DependentUpon>ArenaRunsTable.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaStatsSummary.xaml.cs">
+      <DependentUpon>ArenaStatsSummary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArenaStatsSummaryHighlights.xaml.cs">
+      <DependentUpon>ArenaStatsSummaryHighlights.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\ArensStatsSummaryClasses.xaml.cs">
+      <DependentUpon>ArensStatsSummaryClasses.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\Charts\ChartWins.xaml.cs">
+      <DependentUpon>ChartWins.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\Charts\ChartWinsLossVsClass.xaml.cs">
+      <DependentUpon>ChartWinsLossVsClass.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Arena\Charts\ChartWinsByClass.xaml.cs">
+      <DependentUpon>ChartWinsByClass.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Stats\Converters\CustomTimeframeVisibilityConverter.cs" />
+    <Compile Include="Controls\Stats\Converters\IsNullConverter.cs" />
+    <Compile Include="Controls\Stats\Converters\NotNullToBooleanConverter.cs" />
+    <Compile Include="Controls\Stats\Converters\ToUpperValueConverter.cs" />
+    <Compile Include="Controls\Stats\Overview.xaml.cs">
+      <DependentUpon>Overview.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Core.cs" />
+    <Compile Include="Enums\ArenaImportingBehaviour.cs" />
+    <Compile Include="Enums\ArenaPaymentMethod.cs" />
+    <Compile Include="Enums\ArenaRewardPacks.cs" />
+    <Compile Include="Enums\ClassColorScheme.cs" />
+    <Compile Include="Enums\DeckLayout.cs" />
+    <Compile Include="Enums\EnumValuesExtension.cs" />
+    <Compile Include="Enums\Hearthstone\TAG_CLASS.cs" />
+    <Compile Include="Enums\IconStyle.cs" />
+    <Compile Include="Enums\LastPlayedDateFormat.cs" />
+    <Compile Include="Enums\LoginType.cs" />
+    <Compile Include="Enums\Card\Rarity.cs" />
+    <Compile Include="Enums\MetroTheme.cs" />
+    <Compile Include="Errors\ErrorItem.xaml.cs">
+      <DependentUpon>ErrorItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Errors\ErrorList.xaml.cs">
+      <DependentUpon>ErrorList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Errors\Error.cs" />
+    <Compile Include="Errors\ErrorManager.cs" />
     <Compile Include="Controls\ManaCostBarToolTip.xaml.cs">
       <DependentUpon>ManaCostBarToolTip.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPicker.xaml.cs">
+      <DependentUpon>DeckPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DeckPicker\DeckPickerItem.xaml.cs">
+      <DependentUpon>DeckPickerItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Enums\DeckType.cs" />
+    <Compile Include="Enums\DiscardGameDialogResult.cs" />
+    <Compile Include="Enums\DisplayedStats.cs" />
     <Compile Include="Enums\EnumDescriptionConverter.cs" />
     <Compile Include="Enums\FilterDeckMode.cs" />
+    <Compile Include="Enums\Hearthstone\GAME_TAG.cs" />
+    <Compile Include="Enums\Hearthstone\TAG_CARDTYPE.cs" />
+    <Compile Include="Enums\Hearthstone\TAG_MULLIGAN.cs" />
+    <Compile Include="Enums\Hearthstone\TAG_PLAYSTATE.cs" />
+    <Compile Include="Enums\Hearthstone\TAG_ZONE.cs" />
     <Compile Include="Enums\HeroClass.cs" />
+    <Compile Include="Enums\StatType.cs" />
+    <Compile Include="Enums\Region.cs" />
     <Compile Include="Enums\SortDirection.cs" />
     <Compile Include="Enums\TagFilterOperation.cs" />
     <Compile Include="Enums\TimeFrame.cs" />
+    <Compile Include="Enums\YesNo.cs" />
+    <Compile Include="Exporting\ExportingActions.cs" />
+    <Compile Include="Exporting\ExportingHelper.cs" />
+    <Compile Include="Exporting\ExportingInfo.cs" />
+    <Compile Include="Exporting\HueAndBrightness.cs" />
+    <Compile Include="Controls\Information\CardThemesInfo.xaml.cs">
+      <DependentUpon>CardThemesInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\OptionsSearch.xaml.cs">
+      <DependentUpon>OptionsSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\AdvancedOptions.cs" />
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerNotifications.xaml.cs">
+      <DependentUpon>TrackerNotifications.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DeckManager.cs" />
+    <Compile Include="Hearthstone\DeckState.cs" />
+    <Compile Include="Hearthstone\PredictedCard.cs" />
+    <Compile Include="Utility\Extensions\RectExtensions.cs" />
+    <Compile Include="Utility\Themes\CardBarImageBuilder.cs" />
+    <Compile Include="Hearthstone\GameTime.cs" />
+    <Compile Include="Hearthstone\HearthDbConverter.cs" />
+    <Compile Include="Hearthstone\GameMetaData.cs" />
+    <Compile Include="LogReader\Handlers\LoadingScreenHandler.cs" />
+    <Compile Include="LogReader\Handlers\NetHandler.cs" />
+    <Compile Include="Enums\Hearthstone\Mode.cs" />
+    <Compile Include="LogReader\Handlers\TagChangeActions.cs" />
+    <Compile Include="LogReader\LogReaderHelper.cs" />
+    <Compile Include="Stats\CompiledStats\ArenaRun.cs" />
+    <Compile Include="Stats\CompiledStats\ChartStats.cs" />
+    <Compile Include="Stats\CompiledStats\ClassStats.cs" />
+    <Compile Include="Stats\CompiledStats\MatchupStats.cs" />
+    <Compile Include="Utility\AttachedFormattedString.cs" />
+    <Compile Include="Utility\BatteryMonitor.cs" />
+    <Compile Include="Utility\BoardDamage\BoardCard.cs" />
+    <Compile Include="Utility\BoardDamage\IBoardEntity.cs" />
+    <Compile Include="Utility\BoardDamage\BoardHero.cs" />
+    <Compile Include="Utility\BoardDamage\BoardState.cs" />
+    <Compile Include="Utility\BoardDamage\EntityHelper.cs" />
+    <Compile Include="Utility\BoardDamage\PlayerBoard.cs" />
+    <Compile Include="Importing\ImportingHelper.cs" />
+    <Compile Include="Importing\Websites\Arenavalue.cs" />
+    <Compile Include="Importing\Websites\Elitedecks.cs" />
+    <Compile Include="Importing\Websites\Heartharena.cs" />
+    <Compile Include="Importing\Websites\Hearthbuilder.cs" />
+    <Compile Include="Importing\Websites\Hearthhead.cs" />
+    <Compile Include="Importing\Websites\HearthnewsFr.cs" />
+    <Compile Include="Importing\Websites\Hearthpwn.cs" />
+    <Compile Include="Importing\Websites\Hearthstats.cs" />
+    <Compile Include="Importing\Websites\Hearthstonedecks.cs" />
+    <Compile Include="Importing\Websites\Hearthstoneheroes.cs" />
+    <Compile Include="Importing\Websites\Hearthstoneplayers.cs" />
+    <Compile Include="Importing\Websites\Hearthstonetopdeck.cs" />
+    <Compile Include="Importing\Websites\Hearthstonetopdecks.cs" />
+    <Compile Include="Importing\Websites\Icyveins.cs" />
+    <Compile Include="Importing\Websites\Tempostorm.cs" />
+    <Compile Include="Utility\Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Utility\Extensions\CardListExtensions.cs" />
+    <Compile Include="Utility\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Utility\Extensions\TaskExtensions.cs" />
+    <Compile Include="Utility\Extensions\VersionExtensions.cs" />
+    <Compile Include="Utility\Extensions\ZipArchiveExtensions.cs" />
+    <Compile Include="Utility\LogConfig\LogConfigConstants.cs" />
+    <Compile Include="Utility\LogConfig\LogConfigItem.cs" />
+    <Compile Include="Utility\LogConfig\LogConfig.cs" />
+    <Compile Include="Utility\LogConfig\LogConfigUpdater.cs" />
+    <Compile Include="Utility\LogConfig\LogConfigWatcher.cs" />
+    <Compile Include="Utility\LogConfig\RequiredValueAttribute.cs" />
+    <Compile Include="Utility\Logging\Log.cs" />
+    <Compile Include="Utility\Logging\LogType.cs" />
+    <Compile Include="Utility\MouseActions.cs" />
+    <Compile Include="FlyoutControls\GameDetailItem.cs" />
+    <Compile Include="FlyoutControls\DeckPanel.xaml.cs">
+      <DependentUpon>DeckPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\OptionsMain.xaml.cs">
+      <DependentUpon>OptionsMain.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerAppearance.xaml.cs">
+      <DependentUpon>TrackerAppearance.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerExporting.xaml.cs">
+      <DependentUpon>TrackerExporting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerGeneral.xaml.cs">
+      <DependentUpon>TrackerGeneral.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerHotKeys.xaml.cs">
+      <DependentUpon>TrackerHotKeys.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerImporting.xaml.cs">
+      <DependentUpon>TrackerImporting.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerLogging.xaml.cs">
+      <DependentUpon>TrackerLogging.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerPlugins.xaml.cs">
+      <DependentUpon>TrackerPlugins.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerBackups.xaml.cs">
+      <DependentUpon>TrackerBackups.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerStats.xaml.cs">
+      <DependentUpon>TrackerStats.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Tracker\TrackerSettings.xaml.cs">
+      <DependentUpon>TrackerSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Overlay\OverlayDeckWindows.xaml.cs">
+      <DependentUpon>OverlayDeckWindows.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Overlay\OverlayGeneral.xaml.cs">
+      <DependentUpon>OverlayGeneral.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Overlay\OverlayInteractivity.xaml.cs">
+      <DependentUpon>OverlayInteractivity.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Overlay\OverlayOpponent.xaml.cs">
+      <DependentUpon>OverlayOpponent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\Options\Overlay\OverlayPlayer.xaml.cs">
+      <DependentUpon>OverlayPlayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FlyoutControls\UpdateNotes.xaml.cs">
+      <DependentUpon>UpdateNotes.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HearthStats\Controls\DuplicateMatchesWindow.xaml.cs">
+      <DependentUpon>DuplicateMatchesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Hearthstone\Database.cs" />
+    <Compile Include="Hearthstone\GameV2.cs" />
+    <Compile Include="Hearthstone\IGame.cs" />
+    <Compile Include="Hearthstone\Mechanic.cs" />
+    <Compile Include="Hearthstone\Player.cs" />
+    <Compile Include="LogReader\Handlers\ArenaHandler.cs" />
+    <Compile Include="LogReader\Handlers\AssetHandler.cs" />
+    <Compile Include="LogReader\Handlers\BobHandler.cs" />
+    <Compile Include="LogReader\Handlers\PowerHandler.cs" />
+    <Compile Include="LogReader\HsGameState.cs" />
+    <Compile Include="LogReader\HsLogReaderConstants.cs" />
+    <Compile Include="LogReader\Handlers\RachelleHandler.cs" />
+    <Compile Include="LogReader\Handlers\TagChangeHandler.cs" />
+    <Compile Include="LogReader\Interfaces\IHsGameState.cs" />
+    <Compile Include="LogReader\Interfaces\IHSLogReader.cs" />
+    <Compile Include="LogReader\LogLineItem.cs" />
+    <Compile Include="LogReader\LogReader.cs" />
+    <Compile Include="LogReader\LogReaderInfo.cs" />
+    <Compile Include="LogReader\LogReaderManager.cs" />
+    <Compile Include="Plugins\IPlugin.cs" />
+    <Compile Include="Hearthstone\CardDb.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
+    <Compile Include="Plugins\PluginSettings.cs" />
+    <Compile Include="Plugins\PluginWrapper.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Protocol\JsonCard.cs" />
+    <Compile Include="Protocol\JsonDeck.cs" />
+    <Compile Include="Protocol\JsonDecksWrapper.cs" />
+    <Compile Include="Replay\TurnViewItem.cs" />
+    <Compile Include="Stats\CompiledStats\ArenaStats.cs" />
+    <Compile Include="Utility\ConfigWrapper.cs" />
+    <Compile Include="Utility\RankDetection.cs" />
+    <Compile Include="Utility\ScreenCapture.cs" />
+    <Compile Include="Utility\Themes\CardTextImageBuilder.cs" />
+    <Compile Include="Utility\Themes\ClassicImageBuilder.cs" />
+    <Compile Include="Utility\Themes\DefaultBarImageBuilder.cs" />
+    <Compile Include="Utility\Themes\FrostBarImageBuilder.cs" />
+    <Compile Include="Utility\Themes\MinimalBarImageBuilder.cs" />
+    <Compile Include="Utility\Themes\DarkBarImageBuilder.cs" />
+    <Compile Include="Utility\Themes\Theme.cs" />
+    <Compile Include="Utility\Themes\ThemeManager.cs" />
+    <Compile Include="Windows\ArenaRewardDialog.xaml.cs">
+      <DependentUpon>ArenaRewardDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\Analytics.cs" />
+    <Compile Include="Utility\HotKeys\HotKey.cs" />
+    <Compile Include="Utility\HotKeys\PredefinedHotKeyActionAttribute.cs" />
+    <Compile Include="Utility\HotKeys\HotKeyConfig.cs" />
+    <Compile Include="Utility\HotKeys\HotKeyManager.cs" />
+    <Compile Include="Utility\HotKeys\KeyboardHook.cs" />
+    <Compile Include="Utility\HotKeys\KeyPressedEventArgs.cs" />
+    <Compile Include="Utility\HotKeys\ModifierKeys.cs" />
+    <Compile Include="Utility\HotKeys\PredefinedHotKeyActions.cs" />
+    <Compile Include="Windows\GameResultNotificationWindow.xaml.cs">
+      <DependentUpon>GameResultNotificationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrayIcon.cs" />
+    <Compile Include="Utility\BackupManager.cs" />
+    <Compile Include="Protocol\PipeServer.cs" />
+    <Compile Include="Utility\ConfigManager.cs" />
+    <Compile Include="Utility\DataIssueResolver.cs" />
+    <Compile Include="Utility\ImageCache.cs" />
+    <Compile Include="Utility\Imgur.cs" />
+    <Compile Include="Utility\Markdown.Xaml\Markdown.cs" />
+    <Compile Include="Utility\Markdown.Xaml\TextToFlowDocumentConverter.cs" />
+    <Compile Include="Utility\NetDeck.cs" />
+    <Compile Include="Utility\NewsUpdater.cs" />
+    <Compile Include="Utility\Updater.cs" />
+    <Compile Include="Windows\AddGameDialog.xaml.cs">
+      <DependentUpon>AddGameDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FlyoutControls\DeckStatsControl.xaml.cs">
       <DependentUpon>DeckStatsControl.xaml</DependentUpon>
     </Compile>
@@ -135,22 +483,34 @@
     <Compile Include="FlyoutControls\Help.xaml.cs">
       <DependentUpon>Help.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FlyoutControls\Options.xaml.cs">
-      <DependentUpon>Options.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GameEventHandler.cs" />
+    <Compile Include="HearthStats\API\Objects\CardObject.cs" />
+    <Compile Include="HearthStats\API\Objects\DeckObject.cs" />
+    <Compile Include="HearthStats\API\Objects\DeckObjectWrapper.cs" />
+    <Compile Include="HearthStats\API\Dictionaries.cs" />
+    <Compile Include="HearthStats\API\Objects\DeckVersion.cs" />
+    <Compile Include="HearthStats\API\Objects\GameStatsObject.cs" />
+    <Compile Include="HearthStats\API\Objects\GameStatsObjectWrapper.cs" />
+    <Compile Include="HearthStats\API\HearthStatsAPI.cs" />
+    <Compile Include="HearthStats\API\HearthStatsManager.cs" />
+    <Compile Include="HearthStats\API\PostResult.cs" />
+    <Compile Include="HearthStats\API\Objects\ResponseWrapper.cs" />
+    <Compile Include="HearthStats\Controls\DownloadDecksControl.xaml.cs">
+      <DependentUpon>DownloadDecksControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HearthStats\Controls\UploadDecksControl.xaml.cs">
+      <DependentUpon>UploadDecksControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HearthStats\Controls\LoginControl.xaml.cs">
+      <DependentUpon>LoginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HearthStats\API\LoginResult.cs" />
     <Compile Include="Hearthstone\Card.cs" />
     <Compile Include="Controls\CardToolTip.xaml.cs">
       <DependentUpon>CardToolTip.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DeckListView.xaml.cs">
-      <DependentUpon>DeckListView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="FlyoutControls\DeckNotes.xaml.cs">
       <DependentUpon>DeckNotes.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\DeckPicker.xaml.cs">
-      <DependentUpon>DeckPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\HearthstoneTextBlock.xaml.cs">
       <DependentUpon>HearthstoneTextBlock.xaml</DependentUpon>
@@ -168,40 +528,73 @@
     <Compile Include="Hearthstone\CardIds.cs" />
     <Compile Include="Enums\CardMark.cs" />
     <Compile Include="Hearthstone\Deck.cs" />
-    <Compile Include="DeckExporter.cs" />
-    <Compile Include="DeckImporter.cs" />
+    <Compile Include="Exporting\DeckExporter.cs" />
+    <Compile Include="Importing\DeckImporter.cs" />
     <Compile Include="Enums\GameMode.cs" />
+    <Compile Include="Hearthstone\Entities\Entity.cs" />
     <Compile Include="Hearthstone\Secrets\SecretHelper.cs" />
     <Compile Include="IGameHandler.cs" />
     <Compile Include="Languages\Strings.Designer.cs" />
     <Compile Include="Hearthstone\Secrets\OpponentSecrets.cs" />
     <Compile Include="Hearthstone\Secrets\Secret.cs" />
+    <Compile Include="Replay\Controls\Arrow.cs" />
+    <Compile Include="Replay\Controls\BoardEntity.xaml.cs">
+      <DependentUpon>BoardEntity.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Replay\Controls\CardEntity.xaml.cs">
+      <DependentUpon>CardEntity.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Replay\Enums\KeyPointType.cs" />
+    <Compile Include="Replay\ReplayKeyPoint.cs" />
+    <Compile Include="Replay\ReplayMaker.cs" />
+    <Compile Include="Replay\ReplayReader.cs" />
+    <Compile Include="Replay\ReplayViewer.xaml.cs">
+      <DependentUpon>ReplayViewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Stats\DeckStatsList.cs" />
     <Compile Include="Stats\DefaultDeckStats.cs" />
     <Compile Include="Enums\PlayType.cs" />
     <Compile Include="Enums\GameResult.cs" />
+<<<<<<< HEAD
     <Compile Include="Enums\Turn.cs" />
     <Compile Include="Utility\Lang.cs" />
+=======
+    <Compile Include="Enums\ActivePlayer.cs" />
+>>>>>>> refs/remotes/Epix37/master
     <Compile Include="Utility\Logger.cs" />
-    <Compile Include="MainWindow\MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Decks.cs" />
-    <Compile Include="Hearthstone\Game.cs" />
+    <Compile Include="DeckList.cs" />
     <Compile Include="Utility\Helper.cs" />
-    <Compile Include="HsLogReader.cs" />
-    <Compile Include="MainWindow\MainWindow_Edit.cs" />
-    <Compile Include="MainWindow\MainWindow_Export.cs" />
-    <Compile Include="MainWindow\MainWindow_Import.cs" />
-    <Compile Include="MainWindow\MainWindow_Load.cs" />
-    <Compile Include="MainWindow\MainWindow_NewDeck.cs" />
+    <Compile Include="Windows\MainWindow.Edit.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.Export.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.Import.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.Load.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindow.NewDeck.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Stats\DeckStats.cs" />
     <Compile Include="Stats\GameStats.cs" />
     <Compile Include="Stats\TurnStats.cs" />
     <Compile Include="TurnTimer.cs" />
     <Compile Include="Utility\TextBoxTraceListener.cs" />
+    <Compile Include="Windows\DebugWindow.xaml.cs">
+      <DependentUpon>DebugWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\DeckSelectionDialog.xaml.cs">
       <DependentUpon>DeckSelectionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DiscardGameDialog.xaml.cs">
+      <DependentUpon>DiscardGameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MessageDialogs.cs" />
     <Compile Include="Windows\MoveGameDialog.xaml.cs">
@@ -213,19 +606,58 @@
     <Compile Include="Windows\OpponentWindow.xaml.cs">
       <DependentUpon>OpponentWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\OverlayWindow.BatteryStatus.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.DeckLists.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.Initialize.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.Input.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.MouseOverDetection.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.Tooltips.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\OverlayWindow.Update.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\PlayerWindow.xaml.cs">
       <DependentUpon>PlayerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\SerializableVersion.cs" />
     <Compile Include="Utility\User32.cs" />
+    <Compile Include="Windows\SplashScreenWindow.xaml.cs">
+      <DependentUpon>SplashScreenWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\StatsWindow.xaml.cs">
       <DependentUpon>StatsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\StatsWindow_New.xaml.cs">
+      <DependentUpon>StatsWindow_New.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\TimerWindow.xaml.cs">
       <DependentUpon>TimerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utility\XmlManager.cs" />
+    <Page Include="Controls\AnimatedCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AnimatedCardList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Card.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CardMarker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -233,11 +665,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\DeckListView.xaml">
+    <Page Include="Controls\CardToolTipControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\DeckPickerItem.xaml">
+    <Page Include="Controls\ChartWinsByClass.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DeckPicker\DeckPickerClassItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayout1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayout2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayoutLegacy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DeckPicker\DeckPickerItemLayouts\DeckPickerItemLayoutMinimal.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DeckVersionChange.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -249,15 +705,183 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Stats\ArenaRewards.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaAdvancedCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaClassStats.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaRuns.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaRewardsSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaRunsTable.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaStatsSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArenaStatsSummaryHighlights.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\ArensStatsSummaryClasses.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\Charts\ChartWins.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Arena\Charts\ChartWinsLossVsClass.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Stats\Arena\Charts\ChartWinsByClass.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Stats\Overview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Errors\ErrorItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Errors\ErrorList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ManaCostBarToolTip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FlyoutControls\DeckNotes.xaml">
+    <Page Include="Controls\DeckPicker\DeckPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\DeckPicker.xaml">
+    <Page Include="Controls\DeckPicker\DeckPickerItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\DeckPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Information\CardThemesInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\OptionsMain.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\OptionsSearch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerAppearance.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerExporting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerGeneral.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerNotifications.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerHotKeys.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerImporting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerLogging.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerPlugins.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerBackups.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerStats.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Tracker\TrackerSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\Options\Overlay\OverlayDeckWindows.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Overlay\OverlayGeneral.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Overlay\OverlayInteractivity.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Overlay\OverlayOpponent.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\Options\Overlay\OverlayPlayer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FlyoutControls\UpdateNotes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HearthStats\Controls\DuplicateMatchesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\ArenaRewardDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\GameResultNotificationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\AddGameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlyoutControls\DeckNotes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -285,15 +909,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FlyoutControls\Options.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="FlyoutControls\SortFilterDecks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow\MainWindow.xaml">
+    <Page Include="HearthStats\Controls\DownloadDecksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HearthStats\Controls\UploadDecksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HearthStats\Controls\LoginControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -302,11 +934,31 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Config.cs" />
+    <Page Include="Replay\Controls\BoardEntity.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Replay\Controls\CardEntity.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Replay\ReplayViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\DebugWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\DeckSelectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DiscardGameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -330,7 +982,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\SplashScreenWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\StatsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\StatsWindow_New.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -356,1996 +1016,62 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Content Include="Images\abomination.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\abusive-sergeant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\acidic-swamp-ooze.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\acolyte-of-pain.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\al-akir-the-windlord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\alarm-o-bot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\aldor-peacekeeper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\alexstrasza.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\amani-berserker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancestor-s-call.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancestral-healing.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancestral-spirit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancient-brewmaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancient-mage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancient-of-lore.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancient-of-war.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ancient-watcher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\angry-chicken.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\anima-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\animal-companion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\annoy-o-tron.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\anodized-robo-cub.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\antique-healbot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\anub-ar-ambusher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arathi-weaponsmith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-explosion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-intellect.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-missiles.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-nullifier-x-21.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcane-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\arcanite-reaper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\archmage-antonidas.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\archmage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\argent-commander.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\argent-protector.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\argent-squire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\armor-plating.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\armor-up.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\armorsmith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\assassin-s-blade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\assassinate.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\attack-mode.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\auchenai-soulpriest.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\avenge.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\avenging-wrath.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\azure-drake.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\backstab.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\baine-bloodhoof.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bananas.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bane-of-doom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\baron-geddon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\baron-rivendare.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\battle-rage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bestial-wrath.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\betrayal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\big-game-hunter.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bite.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blade-flurry.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blessed-champion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blessing-of-kings.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blessing-of-might.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blessing-of-wisdom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blingtron-3000.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blizzard.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blood-imp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\blood-knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bloodfen-raptor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bloodlust.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bloodmage-thalnos.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bloodsail-corsair.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bloodsail-raider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bluegill-warrior.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\boar.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bolvar-fordragon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bomb-lobber.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\boom-bot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\booty-bay-bodyguard.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\boulderfist-ogre.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\bouncing-blade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\brawl.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\burly-rockjaw-trogg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\burrowing-mine.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cabal-shadow-priest.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cairne-bloodhoof.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\call-pet.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\captain-greenskin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\captain-s-parrot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cenarius.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\charge.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\chicken.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\chillwind-yeti.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\circle-of-healing.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\claw.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cleave.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\clockwork-giant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\clockwork-gnome.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cobalt-guardian.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cobra-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\coghammer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cogmaster-s-wrench.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cogmaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cold-blood.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\coldlight-oracle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\coldlight-seer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\commanding-shout.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\conceal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cone-of-cold.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\consecration.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\core-hound.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\corruption.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\counterspell.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\crackle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\crazed-alchemist.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cruel-taskmaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\crush.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\cult-master.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dagger-mastery.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dalaran-mage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\damaged-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dancing-swords.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dark-cultist.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dark-iron-dwarf.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dark-wispers.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dark.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\darkbomb.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\darkscale-healer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deadly-poison.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deadly-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deathbloom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deathcharger.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deathlord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\death-s-bite.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\deathwing.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\defender-of-argus.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\defender.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\defias-bandit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\defias-ringleader.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\demolisher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\demonfire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\demonheart.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\devilsaur.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dire-wolf-alpha.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\divine-favor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\divine-spirit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\doomguard.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\doomhammer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\doomsayer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dr-boom.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dragonling-mechanic.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\drain-life.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dread-corsair.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dread-infernal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dream.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\druid-of-the-claw.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\druid-of-the-fang.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dunemaul-shaman.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\duplicate.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\dust-devil.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\eaglehorn-bow.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\earth-elemental.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\earth-shock.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\earthen-ring-farseer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\echo-of-medivh.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\echoing-ooze.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\edwin-vancleef.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\elite-tauren-chieftain.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\elven-archer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\emboldener-3000.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\emerald-drake.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\emergency-coolant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\emperor-cobra.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\enhance-o-mechano.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\enrage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\equality.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ethereal-arcanist.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\eviscerate.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\excess-mana.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\execute.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\explosive-sheep.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\explosive-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\explosive-trap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\eye-for-an-eye.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\faceless-manipulator.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\faerie-dragon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fallout-slime.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fan-of-knives.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\far-sight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\feign-death.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fel-cannon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fel-reaver.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\felguard.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fen-creeper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\feral-spirit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\feugen.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fiery-war-axe.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\finicky-cloakfield.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\finkle-einhorn.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fire-elemental.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fireball.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\fireblast.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flame-imp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flame-leviathan.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flame-of-azzinoth.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flamecannon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flamestrike.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flametongue-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flare.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flesheating-ghoul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\floating-watcher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\flying-machine.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\foe-reaper-4000.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\force-of-nature.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\force-tank-max.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\forked-lightning.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_4.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_5.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_6.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_7.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_8.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_9.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_countbox.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frame_legendary.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\freezing-trap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frog.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frost-elemental.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frost-nova.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frost-shock.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frostbolt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frostwolf-grunt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frostwolf-warlord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frothing-berserker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\frozen-champion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gadgetzan-auctioneer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gahz-rilla.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gallywix-s-coin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gazlowe.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gelbin-mekkatorque.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gift-of-cards.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gift-of-mana.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gilblin-stalker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gladiator-s-longbow.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\glaivezooka.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gnoll.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gnomeregan-infantry.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gnomish-experimenter.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gnomish-inventor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\goblin-auto-barber.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\goblin-blastmage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\goblin-sapper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\goldshire-footman.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gorehowl.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\grimscale-oracle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\grommash-hellscream.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\grove-tender.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gruul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\guardian-of-icecrown.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\guardian-of-kings.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\gurubashi-berserker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hammer-of-wrath.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hand-of-protection.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\harrison-jones.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\harvest-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\haunted-creeper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\headcrack.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\healing-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\healing-touch.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Resources\1553.ttf" />
+    <Resource Include="Resources\Chunkfive.otf" />
+    <Resource Include="HearthStats\Resources\hearthstats_logo.png" />
+    <Resource Include="Resources\SplashScreen.png" />
+    <Content Include="HDTHelper.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HDTUninstaller.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HDTUpdate.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Images\card-icon-coin.png" />
+    <Resource Include="Images\card-icon-created.png" />
+    <Resource Include="Images\card-icon-keep.png" />
+    <Resource Include="Images\card-icon-mulligan.png" />
+    <Resource Include="Images\card-icon-returned.png" />
+    <Resource Include="Images\card-marker.png" />
+    <Resource Include="Images\board_damage.png" />
+    <Resource Include="Images\gold_progress_frame_center.png" />
+    <Resource Include="Images\gold_progress_frame_left.png" />
+    <Resource Include="Images\gold_progress_frame_right.png" />
+    <Resource Include="Resources\Ranks\1.bmp" />
+    <Resource Include="Resources\Ranks\10.bmp" />
+    <Resource Include="Resources\Ranks\11.bmp" />
+    <Resource Include="Resources\Ranks\12.bmp" />
+    <Resource Include="Resources\Ranks\13.bmp" />
+    <Resource Include="Resources\Ranks\14.bmp" />
+    <Resource Include="Resources\Ranks\15.bmp" />
+    <Resource Include="Resources\Ranks\16.bmp" />
+    <Resource Include="Resources\Ranks\17.bmp" />
+    <Resource Include="Resources\Ranks\18.bmp" />
+    <Resource Include="Resources\Ranks\19.bmp" />
+    <Resource Include="Resources\Ranks\2.bmp" />
+    <Resource Include="Resources\Ranks\20.bmp" />
+    <Resource Include="Resources\Ranks\21.bmp" />
+    <Resource Include="Resources\Ranks\22.bmp" />
+    <Resource Include="Resources\Ranks\23.bmp" />
+    <Resource Include="Resources\Ranks\24.bmp" />
+    <Resource Include="Resources\Ranks\25.bmp" />
+    <Resource Include="Resources\Ranks\3.bmp" />
+    <Resource Include="Resources\Ranks\4.bmp" />
+    <Resource Include="Resources\Ranks\5.bmp" />
+    <Resource Include="Resources\Ranks\6.bmp" />
+    <Resource Include="Resources\Ranks\7.bmp" />
+    <Resource Include="Resources\Ranks\8.bmp" />
+    <Resource Include="Resources\Ranks\9.bmp" />
     <Content Include="Images\HearthstoneDeckTracker.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\HearthstoneDeckTracker16.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Images\hellfire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hemet-nesingwary.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\heroic-strike.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hex.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hobgoblin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hogger.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\holy-fire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\holy-light.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\holy-nova.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\holy-smite.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\holy-wrath.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\homing-chicken.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hook.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hound.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\houndmaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\humility.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hungry-crab.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hunter-s-mark.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\hyena.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\i-am-murloc.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ice-barrier.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ice-block.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ice-lance.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\illidan-stormrage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\illuminator.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\imp-losion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\imp-master.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\imp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\inferno.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\injured-blademaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\inner-fire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\inner-rage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\innervate.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\iron-juggernaut.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\iron-sensei.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ironbark-protector.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ironbeak-owl.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ironforge-rifleman.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ironfur-grizzly.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\jaws.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\jeeves.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\jungle-panther.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\junkbot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\keeper-of-the-grove.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kel-thuzad.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kezan-mystic.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kidnapper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kill-command.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\king-krush.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\king-mukla.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\king-of-beasts.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kirin-tor-mage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\knife-juggler.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kobold-geomancer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\kor-kron-elite.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lady-blaumeux.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\laughing-sister.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lava-burst.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lay-on-hands.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\leeroy-jenkins.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\leper-gnome.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lesser-heal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\life-tap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\light-of-the-naaru.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\light-s-justice.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightbomb.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightning-bolt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightning-storm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightspawn.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightwarden.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lightwell.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lil--exorcist.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\loatheb.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\locust-swarm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\loot-hoarder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lord-jaraxxus.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lord-of-the-arena.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lorewalker-cho.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\lost-tallstrider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mad-bomber.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mad-scientist.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\madder-bomber.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\maexxna.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\magma-rager.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mal-ganis.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\malorne.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\malygos.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mana-addict.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mana-tide-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mana-wraith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mana-wyrm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mark-of-nature.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mark-of-the-horsemen.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mark-of-the-wild.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mass-dispel.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\massive-runeblade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\master-of-disguise.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\master-swordsmith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mech-bear-cat.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mechanical-dragonling.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mechanical-yeti.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mechwarper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mekgineer-thermaplugg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\metaltooth-leaper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\micro-machine.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\millhouse-manastorm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mimiron-s-head.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-blast.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-control-crystal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-control-tech.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-control.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-shatter.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-spike.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mind-vision.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mindgames.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mindpocalypse.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mini-mage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mirror-entity.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mirror-image.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\misdirection.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mistress-of-pain.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mogor-the-ogre.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mogu-shan-warden.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\molten-giant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\moonfire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mortal-coil.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mortal-strike.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mountain-giant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mr-bigglesworth.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\multi-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc-raider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc-scout.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc-tidecaller.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc-tidehunter.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc-warleader.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\murloc.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\muster-for-battle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\mutating-injection.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nat-pagle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\naturalize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\necroknight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\necrotic-poison.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\neptulon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nerub-ar-weblord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nerubian-egg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nerubian.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nightblade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nightmare.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\noble-sacrifice.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\northshire-cleric.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nourish.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\novice-engineer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\nozdormu.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\oasis-snapjaw.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ogre-brute.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ogre-magi.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ogre-ninja.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ogre-warmaul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\old-murk-eye.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\one-eyed-cheat.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\onyxia.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\panther.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\patient-assassin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\perdition-s-blade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\piloted-shredder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\piloted-sky-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\pint-sized-summoner.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\pit-lord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\plague.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\poison-seeds.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\polymorph.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\poultryizer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\power-of-the-horde.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\power-of-the-wild.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\power-overwhelming.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\power-word-shield.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\powermace.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\preparation.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\priestess-of-elune.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\prophet-velen.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\puddlestomper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\pure-cold.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\pyroblast.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\quartermaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\questing-adventurer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\raging-worgen.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ragnaros-the-firelord.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\raid-leader.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\rampage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ravenholdt-assassin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\razorfen-hunter.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\reckless-rocketeer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\recombobulator.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\recycle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\redemption.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\reincarnate.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\reinforce.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\repair-bot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\repentance.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\reversing-switch.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\river-crocolisk.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\rockbiter-weapon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\runeblade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\rusty-horn.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sabotage.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sacrificial-pact.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\salty-dog.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\savage-roar.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\savagery.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\savannah-highmane.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\scarlet-crusader.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\scarlet-purifier.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\scavenging-hyena.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\screwjank-clunker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sea-giant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\seal-of-light.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\searing-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\secretkeeper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sen-jin-shieldmasta.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sense-demons.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shade-of-naxxramas.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadow-bolt.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadow-madness.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadow-of-nothing.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadow-word-death.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadow-word-pain.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadowbomber.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadowboxer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadowflame.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadowform.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shadowstep.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shapeshift.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shattered-sun-cleric.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sheep.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shield-block.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shield-slam.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shieldbearer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shielded-minibot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shieldmaiden.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ship-s-cannon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shiv.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\shrinkmeister.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\si7-agent.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\siege-engine.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\silence.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\siltfin-spiritwalker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\silver-hand-knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\silver-hand-recruit.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\silverback-patriarch.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\silvermoon-guardian.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sinister-strike.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\siphon-soul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sir-zeliek.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\skeletal-smith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\skeleton.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\slam.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\slime.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sludge-belcher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\snake-trap.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\snake.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sneed-s-old-shredder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\snipe.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\snowchugger.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\soot-spewer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sorcerer-s-apprentice.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\soul-of-the-forest.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\soulfire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\southsea-captain.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\southsea-deckhand.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spectral-knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spectral-rider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spectral-spider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spectral-trainee.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spectral-warrior.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spellbender.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spellbreaker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spider-tank.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spirit-wolf.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spiteful-smith.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\spore.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sporeburst.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sprint.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\squire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\squirrel.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stalagg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stampeding-kodo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\starfall.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\starfire.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\starving-buzzard.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\steady-shot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\steamwheedle-sniper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stoneclaw-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stoneskin-gargoyle.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stonesplinter-trogg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stonetusk-boar.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stormforged-axe.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stormpike-commando.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stormwind-champion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stormwind-knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\stranglethorn-tiger.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\succubus.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\summoning-portal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sunfury-protector.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sunwalker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\supercharge.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\swipe.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sword-of-justice.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\sylvanas-windrunner.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tank-mode.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\target-dummy.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tauren-warrior.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\temple-enforcer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\thane-korthazz.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\the-beast.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\the-black-knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\the-coin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\thoughtsteal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\thrallmar-farseer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\timber-wolf.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\time-rewinder.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tinker-s-sharpsword-oil.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tinkertown-technician.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tinkmaster-overspark.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tirion-fordring.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\toshley.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\totemic-call.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\totemic-might.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tracking.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\trade-prince-gallywix.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\treant.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tree-of-life.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\troggzor-the-earthinator.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\truesilver-champion.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\tundra-rhino.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\twilight-drake.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\twisting-nether.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unbound-elemental.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\understudy.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\undertaker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unleash-the-hounds.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unrelenting-rider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unrelenting-trainee.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unrelenting-warrior.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unstable-ghoul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\unstable-portal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\upgrade.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\upgraded-repair-bot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\v-07-tr-0n.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\vanish.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\vaporize.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\velen-s-chosen.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\venture-co-mercenary.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\violet-apprentice.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\violet-teacher.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\vitality-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\void-terror.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\voidcaller.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\voidwalker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\vol-jin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\voodoo-doctor.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wailing-soul.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\war-golem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\warbot.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\warsong-commander.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\water-elemental.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\webspinner.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wee-spellstopper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\whelp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\whirling-blades.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\whirling-zap-o-matic.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\whirlwind.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wild-growth.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wild-pyromancer.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\windfury-harpy.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\windfury.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\windspeaker.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wisp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wolfrider.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\worgen-infiltrator.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\worshipper.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\worthless-imp.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wrath-of-air-totem.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\wrath.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\young-dragonhawk.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\young-priestess.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\youthful-brewmaster.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ysera-awakens.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\ysera.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\mana.png" />
     <Resource Include="Resources\health.png" />
     <Resource Include="Resources\damage.png" />
-    <Content Include="Images\zombie-chow.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Resource Include="Resources\druid_small.png" />
     <Resource Include="Resources\hunter_small.png" />
     <Resource Include="Resources\mage_small.png" />
@@ -2355,9 +1081,63 @@
     <Resource Include="Resources\shaman_small.png" />
     <Resource Include="Resources\warlock_small.png" />
     <Resource Include="Resources\warrior_small.png" />
-    <Content Include="Updater.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Resources\armor.png" />
+    <Resource Include="Resources\jaraxxus_small.png" />
+    <Resource Include="Resources\ClassIcons\Square\druid.png" />
+    <Resource Include="Resources\ClassIcons\Square\hunter.png" />
+    <Resource Include="Resources\ClassIcons\Square\mage.png" />
+    <Resource Include="Resources\ClassIcons\Square\paladin.png" />
+    <Resource Include="Resources\ClassIcons\Square\priest.png" />
+    <Resource Include="Resources\ClassIcons\Square\rogue.png" />
+    <Resource Include="Resources\ClassIcons\Square\shaman.png" />
+    <Resource Include="Resources\ClassIcons\Square\warlock.png" />
+    <Resource Include="Resources\ClassIcons\Square\warrior.png" />
+    <Resource Include="Resources\archived_marker.png" />
+    <Page Include="Resources\ReplayViewIcons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Resources\ClassIcons\Round\deathknight.png" />
+    <Resource Include="Resources\ClassIcons\Round\druid.png" />
+    <Resource Include="Resources\ClassIcons\Round\hunter.png" />
+    <Resource Include="Resources\ClassIcons\Round\mage.png" />
+    <Resource Include="Resources\ClassIcons\Round\paladin.png" />
+    <Resource Include="Resources\ClassIcons\Round\priest.png" />
+    <Resource Include="Resources\ClassIcons\Round\rogue.png" />
+    <Resource Include="Resources\ClassIcons\Round\shaman.png" />
+    <Resource Include="Resources\ClassIcons\Round\warlock.png" />
+    <Resource Include="Resources\ClassIcons\Round\warrior.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\druid.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\hunter.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\mage.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\paladin.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\priest.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\rogue.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\shaman.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\warlock.png" />
+    <Resource Include="Resources\ClassIcons\HearthStats\warrior.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseDark\archived2.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseLight\archived2.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseDark\all.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseLight\all.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseLight\archived.png" />
+    <Resource Include="Resources\ClassIcons\General\BaseDark\archived.png" />
+    <None Include="Resources\card-mark-coin.png" />
+    <Resource Include="Utility\Markdown.Xaml\License.txt" />
+    <Resource Include="Resources\cards.png" />
+    <Resource Include="Resources\lightforgekey.png" />
+    <Resource Include="Resources\dust.png" />
+    <Resource Include="Resources\gold.png" />
+    <Resource Include="Resources\patreon_logo.png" />
+    <Resource Include="Resources\pack_stack.png" />
+    <Resource Include="Resources\gold_2.png" />
+    <Resource Include="Resources\cards_2.png" />
+    <Resource Include="Resources\overlay_deck.png" />
+    <Resource Include="Resources\overlay_hand.png" />
+    <Resource Include="Resources\overlay_1.png" />
+    <Resource Include="Resources\overlay_2.png" />
+    <Resource Include="Resources\flavor_text.png" />
+    <Resource Include="Resources\banner.png" />
     <Content Include="Version.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -2370,52 +1150,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="Files\log.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Files\cardsDB.deDE.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.enUS.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.esES.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.esMX.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.frFR.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.itIT.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.koKR.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.plPL.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.ptBR.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.ruRU.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.zhCN.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.zhTW.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.enGB.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Files\cardsDB.ptPT.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -2424,7 +1158,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -2443,13 +1179,52 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HDTHelper\HDTHelper.csproj">
+      <Project>{a2a7984f-d059-4259-bcb7-b63828f03c50}</Project>
+      <Name>HDTHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
+<<<<<<< HEAD
     <PostBuildEvent>if exist Lang rmdir /s /q Lang
 mkdir Lang
 move de-DE Lang
 move zh-CN Lang</PostBuildEvent>
+=======
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+    rmdir /S /Q "..\Hearthstone Deck Tracker"
+    mkdir "..\Hearthstone Deck Tracker"
+    mkdir "..\Hearthstone Deck Tracker/Images"
+    mkdir "..\Hearthstone Deck Tracker/Plugins"
+    xcopy /E /Y "Images\*.*" "..\Hearthstone Deck Tracker\Images"
+    xcopy /Y "HearthstoneDeckTracker.exe" "..\Hearthstone Deck Tracker"
+    xcopy /Y "HearthstoneDeckTracker.exe.config" "..\Hearthstone Deck Tracker"
+    ren "..\Hearthstone Deck Tracker\HearthstoneDeckTracker.exe" "Hearthstone Deck Tracker.exe"
+    ren "..\Hearthstone Deck Tracker\HearthstoneDeckTracker.exe.config" "Hearthstone Deck Tracker.exe.config"
+    xcopy /Y "HDTHelper.exe" "..\Hearthstone Deck Tracker"
+    xcopy /Y "HDTUpdate.exe" "..\Hearthstone Deck Tracker"
+    xcopy /Y "HDTUninstaller.exe" "..\Hearthstone Deck Tracker"
+    xcopy /Y "AForge.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "AForge.Math.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "AForge.Imaging.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "Garlic.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "HearthDb.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "De.TorstenMandelkow.MetroChart.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "HtmlAgilityPack.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "MahApps.Metro.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "Newtonsoft.Json.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "System.Windows.Interactivity.dll" "..\Hearthstone Deck Tracker"
+    xcopy /Y "Version.xml" "..\Hearthstone Deck Tracker" )</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>mkdir "$(TargetDir)\Images\Bars"
+mkdir "$(TargetDir)\Images\Themes"
+xcopy /E /Y "$(ProjectDir)Images\Bars" "$(TargetDir)\Images\Bars"
+xcopy /E /Y "$(ProjectDir)Images\Themes" "$(TargetDir)\Images\Themes"</PreBuildEvent>
+>>>>>>> refs/remotes/Epix37/master
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
