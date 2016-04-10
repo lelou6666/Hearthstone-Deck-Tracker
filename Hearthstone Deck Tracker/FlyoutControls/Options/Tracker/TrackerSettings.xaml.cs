@@ -1,21 +1,16 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using System.Windows.Media;
-using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Stats;
+using Hearthstone_Deck_Tracker.Utility.Extensions;
 using Hearthstone_Deck_Tracker.Windows;
-using MahApps.Metro;
 using Microsoft.Win32;
 using Application = System.Windows.Application;
-using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
 #endregion
 
@@ -43,6 +38,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			CheckboxCheckForUpdates.IsChecked = Config.Instance.CheckForUpdates;
 			CheckboxCheckForBetaUpdates.IsChecked = Config.Instance.CheckForBetaUpdates;
 			CheckboxCloseWithHearthstone.IsChecked = Config.Instance.CloseWithHearthstone;
+			CheckboxStartHearthstoneWithHDT.IsChecked = Config.Instance.StartHearthstoneWithHDT;
 			CheckboxConfigSaveAppData.IsChecked = Config.Instance.SaveConfigInAppData;
 			CheckboxDataSaveAppData.IsChecked = Config.Instance.SaveDataInAppData;
 			CheckboxAdvancedWindowSearch.IsChecked = Config.Instance.UseAnyUnityWindow;
@@ -51,6 +47,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			CheckBoxShowSplashScreen.IsChecked = Config.Instance.ShowSplashScreen;
 			CheckboxStartWithWindows.IsChecked = Config.Instance.StartWithWindows;
 			CheckBoxAnalytics.IsChecked = Config.Instance.GoogleAnalytics;
+			CheckboxAlternativeScreenCapture.IsChecked = Config.Instance.AlternativeScreenCapture;
 
 			if(!Helper.EventKeys.Contains(Config.Instance.KeyPressOnGameStart))
 				Config.Instance.KeyPressOnGameStart = "None";
@@ -61,6 +58,11 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			ComboboxKeyPressGameEnd.SelectedValue = Config.Instance.KeyPressOnGameEnd;
 
 			_initialized = true;
+		}
+
+		private void TrackerSettings_Loaded(object sender, RoutedEventArgs e)
+		{
+			CheckboxShowNewsBar.IsChecked = Core.MainWindow.StatusBarNews.Visibility != Visibility.Collapsed;
 		}
 
 		private void SaveConfig(bool updateOverlay)
@@ -86,7 +88,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			SaveConfig(false);
 		}
 
-		
+
 		private void ComboboxKeyPressGameStart_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if(!_initialized)
@@ -148,6 +150,22 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			if(!_initialized)
 				return;
 			Config.Instance.CloseWithHearthstone = false;
+			Config.Save();
+		}
+		
+		private void CheckboxStartHearthstoneWithHDT_Checked(object sender, RoutedEventArgs e)
+		{
+			if (!_initialized)
+				return;
+			Config.Instance.StartHearthstoneWithHDT = true;
+			Config.Save();
+		}
+
+		private void CheckboxStartHearthstoneWithHDT_Unchecked(object sender, RoutedEventArgs e)
+		{
+			if (!_initialized)
+				return;
+			Config.Instance.StartHearthstoneWithHDT = false;
 			Config.Save();
 		}
 
@@ -212,7 +230,6 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 		private void CheckboxLogTab_Checked(object sender, RoutedEventArgs e)
 		{
 			Helper.OptionsMain.TreeViewItemTrackerLogging.Visibility = Visibility.Visible;
-			//TabItemLog.Visibility = Visibility.Visible;
 			if(!_initialized)
 				return;
 			Config.Instance.ShowLogTab = true;
@@ -222,7 +239,6 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 		private void CheckboxLogTab_Unchecked(object sender, RoutedEventArgs e)
 		{
 			Helper.OptionsMain.TreeViewItemTrackerLogging.Visibility = Visibility.Collapsed;
-			//TabItemLog.Visibility = Visibility.Hidden;
 			if(!_initialized)
 				return;
 			Config.Instance.ShowLogTab = false;
@@ -231,18 +247,14 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 
 		private void ButtonGamePath_OnClick(object sender, RoutedEventArgs e)
 		{
-			var dialog = new FolderBrowserDialog()
-			{
-				Description = "Select your Hearthstone Directory",
-				ShowNewFolderButton = false
-			};
+			var dialog = new FolderBrowserDialog {Description = "Select your Hearthstone Directory", ShowNewFolderButton = false};
 			var dialogResult = dialog.ShowDialog();
 
 			if(dialogResult == DialogResult.OK)
 			{
 				Config.Instance.HearthstoneDirectory = dialog.SelectedPath;
 				Config.Save();
-				Core.MainWindow.ShowMessage("Restart required.", "Please restart HDT for this setting to take effect.");
+				Core.MainWindow.ShowMessage("Restart required.", "Please restart HDT for this setting to take effect.").Forget();
 			}
 		}
 
@@ -286,8 +298,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			if(!_initialized)
 				return;
 			var regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-			if(regKey != null)
-				regKey.SetValue("Hearthstone Deck Tracker", Application.ResourceAssembly.Location);
+			regKey?.SetValue("Hearthstone Deck Tracker", Application.ResourceAssembly.Location);
 			Config.Instance.StartWithWindows = true;
 			Config.Save();
 		}
@@ -297,8 +308,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			if(!_initialized)
 				return;
 			var regKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-			if(regKey != null)
-				regKey.DeleteValue("Hearthstone Deck Tracker", false);
+			regKey?.DeleteValue("Hearthstone Deck Tracker", false);
 			Config.Instance.StartWithWindows = false;
 			Config.Save();
 		}
@@ -369,6 +379,29 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker
 			if(!_initialized)
 				return;
 			Config.Instance.GoogleAnalytics = false;
+			Config.Save();
+		}
+
+		private void CheckboxShowNewsBar_OnClick(object sender, RoutedEventArgs e)
+		{
+			if (!_initialized)
+				return;
+			Utility.NewsUpdater.ToggleNewsVisibility();
+		}
+
+		private void CheckboxAlternativeScreenCapture_Checked(object sender, RoutedEventArgs e)
+		{
+			if(!_initialized)
+				return;
+			Config.Instance.AlternativeScreenCapture = true;
+			Config.Save();
+		}
+
+		private void CheckboxAlternativeScreenCapture_Unchecked(object sender, RoutedEventArgs e)
+		{
+			if(!_initialized)
+				return;
+			Config.Instance.AlternativeScreenCapture = false;
 			Config.Save();
 		}
 	}

@@ -2,521 +2,136 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data.SqlTypes;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Hearthstone_Deck_Tracker.Annotations;
 using Hearthstone_Deck_Tracker.Controls;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
+<<<<<<< HEAD
 using Hearthstone_Deck_Tracker.Overlay;
 using Hearthstone_Deck_Tracker.Utility;
 using Hearthstone_Deck_Tracker.Utility.BoardDamage;
+=======
+using Hearthstone_Deck_Tracker.Utility.Logging;
+using static System.Windows.Visibility;
+>>>>>>> refs/remotes/Epix37/master
 using Card = Hearthstone_Deck_Tracker.Hearthstone.Card;
 
 #endregion
 
-namespace Hearthstone_Deck_Tracker
+namespace Hearthstone_Deck_Tracker.Windows
 {
-    /// <summary>
-    ///     Interaction logic for OverlayWindow.xaml
-    /// </summary>
-    public partial class OverlayWindow : Window, INotifyPropertyChanged
-    {
-        private readonly GameV2 _game;
-        private readonly int _customHeight;
-        private readonly int _customWidth;
-        private readonly Dictionary<UIElement, ResizeGrip> _movableElements;
-        private readonly int _offsetX;
-        private readonly int _offsetY;
-        private readonly List<CardMarker> _cardMarks;
-        private int _cardCount;
-        private bool? _isFriendsListOpen;
-        private string _lastToolTipCardId;
-        private bool _lmbDown;
-        private User32.MouseInput _mouseInput;
-        private Point _mousePos;
-        private int _opponentCardCount;
-        private bool _opponentCardsHidden;
-        private bool _playerCardsHidden;
-        private bool _resizeElement;
-        private bool _secretsTempVisible;
-        private UIElement _selectedUIElement;
-        private bool _uiMovable;
-        private readonly Point[][] _cardMarkPos;
+	/// <summary>
+	///     Interaction logic for OverlayWindow.xaml
+	/// </summary>
+	// ReSharper disable once RedundantExtendsListEntry
+	public partial class OverlayWindow : Window, INotifyPropertyChanged
+	{
+		private const double RankCoveredMaxLeft = 0.1;
+		private const double PlayerRankCoveredMaxHeight = 0.8;
+		private const double OpponentRankCoveredMaxTop = 0.12;
+		private const int ChancePanelsMargins = 8;
+		private readonly Point[][] _cardMarkPos = new Point[MaxHandSize][];
+		private readonly List<CardMarker> _cardMarks = new List<CardMarker>();
+		private readonly int _customHeight;
+		private readonly int _customWidth;
+		private readonly List<UIElement> _debugBoardObjects = new List<UIElement>();
+		private readonly GameV2 _game;
+		private readonly Dictionary<UIElement, ResizeGrip> _movableElements = new Dictionary<UIElement, ResizeGrip>();
+		private readonly int _offsetX;
+		private readonly int _offsetY;
+		private readonly List<Ellipse> _oppBoard = new List<Ellipse>();
+		private readonly List<Ellipse> _playerBoard = new List<Ellipse>();
+		private readonly List<Rectangle> _playerHand = new List<Rectangle>();
+		private bool? _isFriendsListOpen;
+		private int _updateRequestsPlayer;
+		private int _updateRequestsOpponent;
+		private string _lastToolTipCardId;
+		private bool _lmbDown;
+		private User32.MouseInput _mouseInput;
+		private Point _mousePos;
+		private bool _opponentCardsHidden;
+		private bool _playerCardsHidden;
+		private bool _resizeElement;
+		private bool _secretsTempVisible;
+		private UIElement _selectedUiElement;
+		private bool _uiMovable;
 
-        public OverlayWindow(GameV2 game)
-        {
-            _game = game;
-            InitializeComponent();
-
-            if (Config.Instance.ExtraFeatures && Config.Instance.ForceMouseHook)
-                HookMouse();
-
-            //ListViewPlayer.ItemsSource = _game.IsUsingPremade ? _game.PlayerDeck : _game.PlayerDrawn;
-            //ListViewOpponent.ItemsSource = _game.OpponentCards;
-            Scaling = 1.0;
-            OpponentScaling = 1.0;
-            ShowInTaskbar = Config.Instance.ShowInTaskbar;
-            if (Config.Instance.VisibleOverlay)
-                Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#4C0000FF");
-            _offsetX = Config.Instance.OffsetX;
-            _offsetY = Config.Instance.OffsetY;
-            _customWidth = Config.Instance.CustomWidth;
-            _customHeight = Config.Instance.CustomHeight;
-
-            // Add CardMarkers to the list.  
-            _cardMarks = new List<CardMarker> { Marks0, Marks1, Marks2, Marks3, Marks4, Marks5, Marks6, Marks7, Marks8, Marks9 };
-
-            const double tWidth = 1024.0;
-            const double tHeight = 768.0;
-            _cardMarkPos = new Point[10][];
-            _cardMarkPos[0] = new[] { new Point(480 / tWidth, 48 / tHeight) };
-            _cardMarkPos[1] = new[] { new Point(439 / tWidth, 47 / tHeight), new Point(520 / tWidth, 48 / tHeight) };
-            _cardMarkPos[2] = new[]
-                       {
-               new Point(392 / tWidth, 33 / tHeight),
-               new Point(479 / tWidth, 47 / tHeight),
-               new Point(569 / tWidth, 40 / tHeight)
-           };
-            _cardMarkPos[3] = new[]
-                       {
-               new Point(382 / tWidth, 21 / tHeight),
-               new Point(446 / tWidth, 41 / tHeight),
-               new Point(512 / tWidth, 47 / tHeight),
-               new Point(580 / tWidth, 43 / tHeight)
-           };
-            _cardMarkPos[4] = new[]
-                       {
-               new Point(375 / tWidth, 23 / tHeight),
-               new Point(427 / tWidth, 39 / tHeight),
-               new Point(479 / tWidth, 47 / tHeight),
-               new Point(533 / tWidth, 46 / tHeight),
-               new Point(586 / tWidth, 36 / tHeight)
-           };
-            _cardMarkPos[5] = new[]
-                       {
-               new Point(371 / tWidth, 12 / tHeight),
-               new Point(414 / tWidth, 30 / tHeight),
-               new Point(458 / tWidth, 43 / tHeight),
-               new Point(502 / tWidth, 48 / tHeight),
-               new Point(546 / tWidth, 47 / tHeight),
-               new Point(591 / tWidth, 39 / tHeight)
-           };
-            _cardMarkPos[6] = new[]
-                       {
-               new Point(368 / tWidth, 15 / tHeight),
-               new Point(405 / tWidth, 31 / tHeight),
-               new Point(442 / tWidth, 41 / tHeight),
-               new Point(479 / tWidth, 48 / tHeight),
-               new Point(517 / tWidth, 47 / tHeight),
-               new Point(555 / tWidth, 41 / tHeight),
-               new Point(594 / tWidth, 31 / tHeight)
-           };
-            _cardMarkPos[7] = new[]
-                       {
-               new Point(365 / tWidth, 04 / tHeight),
-               new Point(397 / tWidth, 22 / tHeight),
-               new Point(430 / tWidth, 35 / tHeight),
-               new Point(462 / tWidth, 45 / tHeight),
-               new Point(496 / tWidth, 48 / tHeight),
-               new Point(530 / tWidth, 48 / tHeight),
-               new Point(563 / tWidth, 43 / tHeight),
-               new Point(597 / tWidth, 33 / tHeight)
-           };
-            _cardMarkPos[8] = new[]
-                       {
-               new Point(363 / tWidth, 07 / tHeight),
-               new Point(392 / tWidth, 23 / tHeight),
-               new Point(421 / tWidth, 35 / tHeight),
-               new Point(450 / tWidth, 43 / tHeight),
-               new Point(479 / tWidth, 48 / tHeight),
-               new Point(508 / tWidth, 47 / tHeight),
-               new Point(539 / tWidth, 43 / tHeight),
-               new Point(569 / tWidth, 35 / tHeight),
-               new Point(599 / tWidth, 23 / tHeight)
-           };
-            _cardMarkPos[9] = new[]
-                       {
-               new Point(364 / tWidth, 04 / tHeight),
-               new Point(388 / tWidth, 13 / tHeight),
-               new Point(414 / tWidth, 28 / tHeight),
-               new Point(440 / tWidth, 38 / tHeight),
-               new Point(467 / tWidth, 45 / tHeight),
-               new Point(492 / tWidth, 48 / tHeight),
-               new Point(520 / tWidth, 48 / tHeight),
-               new Point(546 / tWidth, 44 / tHeight),
-               new Point(573 / tWidth, 37 / tHeight),
-               new Point(600 / tWidth, 27 / tHeight)
-           };
-            _movableElements = new Dictionary<UIElement, ResizeGrip>
-            {
-                {StackPanelPlayer, new ResizeGrip()},
-                {StackPanelOpponent, new ResizeGrip()},
-                {StackPanelSecrets, new ResizeGrip()},
-                {LblTurnTime, new ResizeGrip()},
-				{IconBoardAttackPlayer, new ResizeGrip()},
-                {IconBoardAttackOpponent, new ResizeGrip()},
-                {LblPlayerTurnTime, new ResizeGrip()}
-            };
-
-            UpdateScaling();
-        }
-
-        public bool ForceHidden { get; set; }
-        public static double Scaling { get; set; }
-        public static double OpponentScaling { get; set; }
-        public Visibility WarningVisibility { get; set; }
-
-	    public List<Card> PlayerDeck
-	    {
-		    get { return _game.Player.DisplayCards; }
-	    }
-
-	    public List<Card> OpponentDeck
-	    {
-			get { return _game.Opponent.DisplayRevealedCards; }
-		}
-
-		private void MouseInputOnLmbUp(object sender, EventArgs eventArgs)
-        {
-            if (Visibility != Visibility.Visible)
-                return;
-            if (_selectedUIElement != null)
-                Config.Save();
-            _selectedUIElement = null;
-            _lmbDown = false;
-            _resizeElement = false;
-        }
-
-        private void MouseInputOnMouseMoved(object sender, EventArgs eventArgs)
-        {
-            if (!_lmbDown || Visibility != Visibility.Visible)
-                return;
-
-            var pos = User32.GetMousePos();
-            var newPos = new Point(pos.X, pos.Y);
-            var delta = new Point((newPos.X - _mousePos.X) * 100, (newPos.Y - _mousePos.Y) * 100);
-			_mousePos = newPos;
-
-			var panel = _selectedUIElement as StackPanel;
-            if (panel != null)
-            {
-                if (panel.Equals(StackPanelPlayer))
-                {
-                    if (_resizeElement)
-                    {
-                        Config.Instance.PlayerDeckHeight += delta.Y / Height;
-                        _movableElements[panel].Height = Height * Config.Instance.PlayerDeckHeight / 100;
-                    }
-                    else
-                    {
-                        Config.Instance.PlayerDeckTop += delta.Y / Height;
-                        Config.Instance.PlayerDeckLeft += delta.X / Width;
-                        Canvas.SetTop(_movableElements[panel], Height * Config.Instance.PlayerDeckTop / 100);
-                        Canvas.SetLeft(_movableElements[panel],
-                                       Width * Config.Instance.PlayerDeckLeft / 100
-                                       - StackPanelPlayer.ActualWidth * Config.Instance.OverlayPlayerScaling / 100);
-					}
-					return;
-				}
-                if (panel.Equals(StackPanelOpponent))
-                {
-                    if (_resizeElement)
-                    {
-                        Config.Instance.OpponentDeckHeight += delta.Y / Height;
-                        _movableElements[panel].Height = Height * Config.Instance.OpponentDeckHeight / 100;
-					}
-                    else
-                    {
-                        Config.Instance.OpponentDeckTop += delta.Y / Height;
-                        Config.Instance.OpponentDeckLeft += delta.X / Width;
-                        Canvas.SetTop(_movableElements[panel], Height * Config.Instance.OpponentDeckTop / 100);
-                        Canvas.SetLeft(_movableElements[panel], Width * Config.Instance.OpponentDeckLeft / 100);
-					}
-					return;
-				}
-                if (panel.Equals(StackPanelSecrets))
-                {
-                    if (_resizeElement)
-                    {
-						/*
-                        const int width = 215;
-                        var height = 35 * StackPanelSecrets.Children.Count;
-                        Config.Instance.SecretsPanelScaling += Math.Abs(delta.Y) > Math.Abs(delta.X) ? delta.Y / (100 * height) : delta.X / (100 * width);
-                        if (Config.Instance.SecretsPanelScaling > 1)
-                            Config.Instance.SecretsPanelScaling = 1;
-                        else if (Config.Instance.SecretsPanelScaling < 0.4)
-                            Config.Instance.SecretsPanelScaling = 0.4;
-                        _movableElements[panel].RenderTransform = new ScaleTransform(Config.Instance.SecretsPanelScaling,
-                                                                                     Config.Instance.SecretsPanelScaling);
-																					 */
-					}
-					else
-                    {
-                        Config.Instance.SecretsTop += delta.Y / Height;
-                        Config.Instance.SecretsLeft += delta.X / Width;
-                        Canvas.SetTop(_movableElements[panel], Height * Config.Instance.SecretsTop / 100);
-                        Canvas.SetLeft(_movableElements[panel], Width * Config.Instance.SecretsLeft / 100);
-					}
-					return;
-				}
-            }
-
-            var timer = _selectedUIElement as HearthstoneTextBlock;
-            if (timer != null)
-            {
-                if (timer.Equals(LblPlayerTurnTime))
-                {
-                    Config.Instance.TimersVerticalSpacing += delta.Y / 100;
-                    Config.Instance.TimersHorizontalSpacing += delta.X / 100;
-                    Canvas.SetTop(_movableElements[timer],
-                                  Height * Config.Instance.TimersVerticalPosition / 100 + Config.Instance.TimersVerticalSpacing);
-                    Canvas.SetLeft(_movableElements[timer],
-                                   Width * Config.Instance.TimersHorizontalPosition / 100 + Config.Instance.TimersHorizontalSpacing);
-					return;
-				}
-                if (timer.Equals(LblTurnTime))
-                {
-                    Config.Instance.TimersVerticalPosition += delta.Y / Height;
-                    Config.Instance.TimersHorizontalPosition += delta.X / Width;
-                    Canvas.SetTop(_movableElements[timer], Height * Config.Instance.TimersVerticalPosition / 100);
-                    Canvas.SetLeft(_movableElements[timer], Width * Config.Instance.TimersHorizontalPosition / 100);
-
-                    var playerTimer =
-                        _movableElements.First(e => e.Key is HearthstoneTextBlock && ((HearthstoneTextBlock)e.Key).Name.Contains("Player")).Value;
-                    Canvas.SetTop(playerTimer, Height * Config.Instance.TimersVerticalPosition / 100 + Config.Instance.TimersVerticalSpacing);
-                    Canvas.SetLeft(playerTimer, Width * Config.Instance.TimersHorizontalPosition / 100 + Config.Instance.TimersHorizontalSpacing);
-					return;
-				}
-            }
-
-	        var grid = _selectedUIElement as Grid;
-	        if(grid != null)
-			{
-				var ratio = (4.0 / 3.0) / (Width / Height);
-				if(grid.Equals(IconBoardAttackPlayer))
-				{
-					Config.Instance.AttackIconPlayerVerticalPosition += delta.Y / Height;
-					Config.Instance.AttackIconPlayerHorizontalPosition += delta.X / (Width * ratio);
-					Canvas.SetTop(_movableElements[grid], Height * Config.Instance.AttackIconPlayerVerticalPosition / 100);
-					Canvas.SetLeft(_movableElements[grid], Helper.GetScaledXPos(Config.Instance.AttackIconPlayerHorizontalPosition / 100, (int)Width, ratio));
-					return;
-				}
-				if(grid.Equals(IconBoardAttackOpponent))
-				{
-					Config.Instance.AttackIconOpponentVerticalPosition += delta.Y / Height;
-					Config.Instance.AttackIconOpponentHorizontalPosition += delta.X / (Width * ratio);
-					Canvas.SetTop(_movableElements[grid], Height * Config.Instance.AttackIconOpponentVerticalPosition / 100);
-					Canvas.SetLeft(_movableElements[grid], Helper.GetScaledXPos(Config.Instance.AttackIconOpponentHorizontalPosition / 100, (int)Width, ratio));
-					return;
-				}
-			}
-        }
-
-        private void MouseInputOnLmbDown(object sender, EventArgs eventArgs)
-        {
-            if (!User32.IsHearthstoneInForeground() || Visibility != Visibility.Visible)
-                return;
-
-            var pos = User32.GetMousePos();
-            _mousePos = new Point(pos.X, pos.Y);
-
-            if (_uiMovable)
-            {
-                _lmbDown = true;
-                foreach (var movableElement in _movableElements)
-                {
-                    var relativePos = movableElement.Value.PointFromScreen(_mousePos);
-
-                    var panel = movableElement.Key as StackPanel;
-                    if (panel != null)
-                    {
-                        if (PointInsideControl(relativePos, movableElement.Value.ActualWidth, movableElement.Value.ActualHeight))
-                        {
-                            if (Math.Abs(relativePos.X - movableElement.Value.ActualWidth) < 30
-                               && Math.Abs(relativePos.Y - movableElement.Value.ActualHeight) < 30)
-                                _resizeElement = true;
-
-                            _selectedUIElement = movableElement.Key;
-                            return;
-                        }
-                    }
-
-                    var timer = movableElement.Key as HearthstoneTextBlock;
-                    if (timer != null)
-                    {
-                        if (PointInsideControl(relativePos, movableElement.Value.ActualWidth, movableElement.Value.ActualHeight))
-                        {
-                            //if(Math.Abs(relativePos.X - timer.ActualWidth) < 30 && Math.Abs(relativePos.Y - timer.ActualHeight) < 30)
-                            //_resizeElement = true;
-
-                            _selectedUIElement = movableElement.Key;
-                            return;
-                        }
-                    }
-	                var grid = movableElement.Key as Grid;
-	                if(grid != null)
-					{
-						if(PointInsideControl(relativePos, movableElement.Value.ActualWidth, movableElement.Value.ActualHeight))
-						{
-							_selectedUIElement = movableElement.Key;
-							return;
-						}
-					}
-                }
-            }
-
-            HideCardsWhenFriendsListOpen(PointFromScreen(_mousePos));
-			GrayOutSecrets(_mousePos);
-
-		}
-		private void GrayOutSecrets(Point mousePos)
+		public OverlayWindow(GameV2 game)
 		{
-			if (!PointInsideControl(StackPanelSecrets.PointFromScreen(mousePos), StackPanelSecrets.ActualWidth, StackPanelSecrets.ActualHeight))
-				return;
+			_game = game;
+			InitializeComponent();
 
-			var card = ToolTipCard.DataContext as Card;
-			if (card == null)
-				return;
-
-			_game.OpponentSecrets.Trigger(card.Id);
-			ShowSecrets();
+			if(Config.Instance.ExtraFeatures && Config.Instance.ForceMouseHook)
+				HookMouse();
+			ShowInTaskbar = Config.Instance.ShowInTaskbar;
+			if(Config.Instance.VisibleOverlay)
+				Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#4C0000FF");
+			_offsetX = Config.Instance.OffsetX;
+			_offsetY = Config.Instance.OffsetY;
+			_customWidth = Config.Instance.CustomWidth;
+			_customHeight = Config.Instance.CustomHeight;
+			if(Config.Instance.ShowBatteryLife)
+				EnableBatteryMonitor();
+			InitializeCollections();
+			GridMain.Visibility = Hidden;
+			if(User32.GetHearthstoneWindow() != IntPtr.Zero)
+				UpdatePosition();
+			Update(true);
+			UpdateScaling();
+			UpdatePlayerLayout();
+			UpdateOpponentLayout();
+			GridMain.Visibility = Visible;
 		}
 
-        private async void HideCardsWhenFriendsListOpen(Point clickPos)
-        {
-            var panels = new List<StackPanel>();
-            if (Canvas.GetLeft(StackPanelPlayer) - 200 < 500)
-                panels.Add(StackPanelPlayer);
-            if (Canvas.GetLeft(StackPanelOpponent) < 500)
-                panels.Add(StackPanelOpponent);
+		private double ScreenRatio => (4.0 / 3.0) / (Width / Height);
+		public bool ForceHidden { get; set; }
+		public Visibility WarningVisibility { get; set; }
+		public List<Card> PlayerDeck => _game.Player.PlayerCardList;
+		public List<Card> OpponentDeck => _game.Opponent.OpponentCardList;
+		public event PropertyChangedEventHandler PropertyChanged;
 
-            _isFriendsListOpen = null;
-            if (panels.Count > 0 && !Config.Instance.HideDecksInOverlay)
-            {
-                foreach (var panel in panels)
-                {
-                    //if panel visible, only continue of click was in the button left corner
-                    if (!(clickPos.X < 150 && clickPos.Y > Height - 100) && panel.Visibility == Visibility.Visible)
-                        continue;
+		public double PlayerStackHeight => (Config.Instance.PlayerDeckHeight / 100 * Height) / (Config.Instance.OverlayPlayerScaling / 100);
+		public double PlayerListHeight => PlayerStackHeight - PlayerLabelsHeight;
+		public double PlayerLabelsHeight => CanvasPlayerChance.ActualHeight + CanvasPlayerCount.ActualHeight
+			+ LblPlayerFatigue.ActualHeight + LblDeckTitle.ActualHeight + LblWins.ActualHeight + ChancePanelsMargins;
 
-                    var checkForFriendsList = true;
-                    if (panel.Equals(StackPanelPlayer) && Config.Instance.HidePlayerCards)
-                        checkForFriendsList = false;
-                    else if (panel.Equals(StackPanelOpponent) && Config.Instance.HideOpponentCards)
-                        checkForFriendsList = false;
+		public VerticalAlignment PlayerStackPanelAlignment
+			=> Config.Instance.OverlayCenterPlayerStackPanel ? VerticalAlignment.Center : VerticalAlignment.Top;
 
-                    if (checkForFriendsList)
-                    {
-                        if (_isFriendsListOpen == null)
-                            _isFriendsListOpen = await Helper.FriendsListOpen();
-                        if (_isFriendsListOpen.Value)
-                        {
-                            var needToHide = Canvas.GetTop(panel) + panel.ActualHeight > Height * 0.3;
-                            if (needToHide)
-                            {
-                                panel.Visibility = Visibility.Collapsed;
-                                if (panel.Equals(StackPanelPlayer))
-                                    _playerCardsHidden = true;
-                                else
-                                    _opponentCardsHidden = true;
-                            }
-                        }
-                        else if (panel.Visibility == Visibility.Collapsed)
-                        {
-                            if (!(_game.IsInMenu && Config.Instance.HideInMenu))
-                            {
-                                panel.Visibility = Visibility.Visible;
-                                if (panel.Equals(StackPanelPlayer))
-                                    _playerCardsHidden = false;
-                                else
-                                    _opponentCardsHidden = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+		public double OpponentStackHeight => (Config.Instance.OpponentDeckHeight / 100 * Height) / (Config.Instance.OverlayOpponentScaling / 100);
+		public double OpponentListHeight => OpponentStackHeight - OpponentLabelsHeight;
 
-        private void SetOpponentCardCount(int cardCount, int cardsLeftInDeck)
-        {
-            _opponentCardCount = cardCount;
+		public double OpponentLabelsHeight => CanvasOpponentChance.ActualHeight + CanvasOpponentCount.ActualHeight
+											+ LblOpponentFatigue.ActualHeight + LblWinRateAgainst.ActualHeight + ChancePanelsMargins;
 
-            LblOpponentCardCount.Text = cardCount.ToString();
-            LblOpponentDeckCount.Text = cardsLeftInDeck.ToString();
+		public VerticalAlignment OpponentStackPanelAlignment
+			=> Config.Instance.OverlayCenterOpponentStackPanel ? VerticalAlignment.Center : VerticalAlignment.Top;
 
-            if (cardsLeftInDeck <= 0)
-            {
-                LblOpponentFatigue.Text = "Next draw fatigues for: " + (_game.Opponent.Fatigue + 1);
+		public void ShowOverlay(bool enable)
+		{
+			if(enable)
+			{
+				Show();
+				if(User32.GetForegroundWindow() == new WindowInteropHelper(this).Handle)
+					User32.BringHsToForeground();
+			}
+			else
+				Hide();
+		}
 
-                LblOpponentDrawChance2.Text = "0%";
-                LblOpponentDrawChance1.Text = "0%";
-                LblOpponentHandChance2.Text = cardCount <= 0 ? "0%" : "100%"; ;
-                LblOpponentHandChance1.Text = cardCount <= 0 ? "0%" : "100%";
-                return;
-            }
-            LblOpponentFatigue.Text = "";
-
-            var handWithoutCoin = cardCount - (_game.Opponent.HasCoin ? 1 : 0);
-
-            var holdingNextTurn2 = Math.Round(100.0f * Helper.DrawProbability(2, (cardsLeftInDeck + handWithoutCoin), handWithoutCoin + 1), 1);
-            var drawNextTurn2 = Math.Round(200.0f / cardsLeftInDeck, 1);
-            LblOpponentDrawChance2.Text = (cardsLeftInDeck == 1 ? 100 : drawNextTurn2) + "%";
-            LblOpponentHandChance2.Text = holdingNextTurn2 + "%";
-
-            var holdingNextTurn = Math.Round(100.0f * Helper.DrawProbability(1, (cardsLeftInDeck + handWithoutCoin), handWithoutCoin + 1), 1);
-            var drawNextTurn = Math.Round(100.0f / cardsLeftInDeck, 1);
-            LblOpponentDrawChance1.Text = drawNextTurn + "%";
-            LblOpponentHandChance1.Text = holdingNextTurn + "%";
-        }
-
-        private void SetCardCount(int cardCount, int cardsLeftInDeck)
-        {
-            _cardCount = cardCount;
-
-            LblCardCount.Text = cardCount.ToString();
-            LblDeckCount.Text = cardsLeftInDeck.ToString();
-
-            if (cardsLeftInDeck <= 0)
-            {
-                LblPlayerFatigue.Text = "Next draw fatigues for: " + (_game.Player.Fatigue + 1);
-
-                LblDrawChance2.Text = "0%";
-                LblDrawChance1.Text = "0%";
-                return;
-            }
-            LblPlayerFatigue.Text = "";
-
-            var drawNextTurn2 = Math.Round(200.0f / cardsLeftInDeck, 1);
-            LblDrawChance2.Text = (cardsLeftInDeck == 1 ? 100 : drawNextTurn2) + "%";
-            LblDrawChance1.Text = Math.Round(100.0f / cardsLeftInDeck, 1) + "%";
-        }
-
-        public void ShowOverlay(bool enable)
-        {
-            if (enable)
-            {
-                Show();
-                if (User32.GetForegroundWindow() == new WindowInteropHelper(this).Handle)
-                    User32.BringHsToForeground();
-            }
-            else
-                Hide();
-        }
-
-	    public void ForceHide(bool hide)
-	    {
-		    ForceHidden = hide;
+		public void ForceHide(bool hide)
+		{
+			ForceHidden = hide;
 			UpdatePosition();
+<<<<<<< HEAD
 	    }
 
         private void SetRect(int top, int left, int width, int height)
@@ -762,19 +377,22 @@ namespace Hearthstone_Deck_Tracker
         }
 
 	    private void UpdateAttackValues()
-		{
-			IconBoardAttackPlayer.Visibility = Config.Instance.HidePlayerAttackIcon || _game.IsInMenu ? Visibility.Collapsed : Visibility.Visible;
-			IconBoardAttackOpponent.Visibility = Config.Instance.HideOpponentAttackIcon || _game.IsInMenu ? Visibility.Collapsed : Visibility.Visible;
-
-			// do the calculation if at least one of the icons is visible
-			if(IconBoardAttackPlayer.Visibility == Visibility.Visible || IconBoardAttackOpponent.Visibility == Visibility.Visible)
-			{
-				var board = new BoardState();
-				TextBlockPlayerAttack.Text = board.Player.Damage.ToString();
-				TextBlockOpponentAttack.Text = board.Opponent.Damage.ToString();
-			}			
+=======
 		}
 
+		private void SetRect(int top, int left, int width, int height)
+>>>>>>> refs/remotes/Epix37/master
+		{
+			Top = top + _offsetY;
+			Left = left + _offsetX;
+			Width = (_customWidth == -1) ? width : _customWidth;
+			Height = (_customHeight == -1) ? height : _customHeight;
+			CanvasInfo.Width = (_customWidth == -1) ? width : _customWidth;
+			CanvasInfo.Height = (_customHeight == -1) ? height : _customHeight;
+			StackPanelAdditionalTooltips.MaxHeight = Height;
+		}
+
+<<<<<<< HEAD
 	    private void UpdateGoldProgress()
         {
             var region = (int)_game.CurrentRegion - 1;
@@ -1264,88 +882,59 @@ namespace Hearthstone_Deck_Tracker
                             movableElement.Value.Height = StackPanelSecrets.ActualHeight > 0 ? StackPanelSecrets.ActualHeight : 0;
                         else
                             movableElement.Value.Height = elementSize.Height > 0 ? elementSize.Height : 0;
+=======
+		private void Window_SourceInitialized_1(object sender, EventArgs e)
+		{
+			var hwnd = new WindowInteropHelper(this).Handle;
+			User32.SetWindowExStyle(hwnd, User32.WsExTransparent | User32.WsExToolWindow);
+		}
+>>>>>>> refs/remotes/Epix37/master
 
-                        movableElement.Value.Width = elementSize.Width > 0 ? elementSize.Width : 0;
 
-                        movableElement.Value.Visibility = Visibility.Visible;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.WriteLine(ex.ToString(), "UnlockOverlay");
-                    }
-                }
-            }
-            else
-            {
-                if (!(Config.Instance.ExtraFeatures && Config.Instance.ForceMouseHook))
-                    UnHookMouse();
-                if (_secretsTempVisible)
-                    HideSecrets();
-                if (_game.IsInMenu)
-                    HideTimers();
+		public void HideTimers() => LblPlayerTurnTime.Visibility = LblOpponentTurnTime.Visibility = LblTurnTime.Visibility = Hidden;
 
-                foreach (var movableElement in _movableElements)
-                    movableElement.Value.Visibility = Visibility.Collapsed;
-            }
+		public void ShowTimers()
+			=>
+				LblPlayerTurnTime.Visibility =
+				LblOpponentTurnTime.Visibility = LblTurnTime.Visibility = Config.Instance.HideTimers ? Hidden : Visible;
 
-            return _uiMovable;
-        }
+		public void ShowSecrets(bool force = false, HeroClass? heroClass = null)
+		{
+			if(Config.Instance.HideSecrets && !force)
+				return;
 
-        private bool TrySetResizeGripHeight(ResizeGrip element, double height)
-        {
-            if (height <= 0)
-                return false;
-            element.Height = height;
-            return true;
-        }
+			StackPanelSecrets.Children.Clear();
+			var secrets = heroClass == null ? _game.OpponentSecrets.GetSecrets() : _game.OpponentSecrets.GetDefaultSecrets(heroClass.Value);
+			foreach(var id in secrets)
+			{
+				var cardObj = new Controls.Card();
+				var card = Database.GetCardFromId(id.CardId);
+				card.Count = id.AdjustedCount(_game);
+				cardObj.SetValue(DataContextProperty, card);
+				StackPanelSecrets.Children.Add(cardObj);
+			}
 
-        private Size GetUiElementSize(UIElement element)
-        {
-            if (element == null)
-                return new Size();
-            var panel = element as StackPanel;
-            if (panel != null)
-                return new Size(panel.ActualWidth, panel.ActualHeight);
-            var block = element as HearthstoneTextBlock;
-            if (block != null)
-                return new Size(block.ActualWidth, block.ActualHeight);
-	        var grid = element as Grid;
-			if(grid != null)
-				return new Size(grid.ActualWidth, grid.ActualHeight);
-            return new Size();
-        }
-
-        public void HookMouse()
-        {
-            if (_mouseInput != null)
-                return;
-            _mouseInput = new User32.MouseInput();
-            _mouseInput.LmbDown += MouseInputOnLmbDown;
-            _mouseInput.LmbUp += MouseInputOnLmbUp;
-            _mouseInput.MouseMoved += MouseInputOnMouseMoved;
-            Logger.WriteLine("Enabled mouse hook", "Overlay");
-        }
-
-        public void UnHookMouse()
-        {
-            if (_uiMovable || _mouseInput == null)
-                return;
-            _mouseInput.Dispose();
-            _mouseInput = null;
-            Logger.WriteLine("Disabled mouse hook", "Overlay");
-        }
-
-        private void OverlayWindow_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            //in addition to setting this in mainwindow_load: (in case of minimized)
-            var presentationsource = PresentationSource.FromVisual(this);
-            if (presentationsource != null) // make sure it's connected
-            {
-                Helper.DpiScalingX = presentationsource.CompositionTarget.TransformToDevice.M11;
-                Helper.DpiScalingY = presentationsource.CompositionTarget.TransformToDevice.M22;
-            }
+			StackPanelSecrets.Visibility = Visible;
 		}
 
+		public void HideSecrets() => StackPanelSecrets.Visibility = Collapsed;
+
+		private void Window_Closing(object sender, CancelEventArgs e)
+		{
+			if(_mouseInput != null)
+				UnHookMouse();
+			DisableBatteryMonitor();
+		}
+
+		private void OverlayWindow_OnLoaded(object sender, RoutedEventArgs e)
+		{
+			//in addition to setting this in mainwindow_load: (in case of minimized)
+			var presentationsource = PresentationSource.FromVisual(this);
+			Helper.DpiScalingX = presentationsource?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+			Helper.DpiScalingY = presentationsource?.CompositionTarget?.TransformToDevice.M22 ?? 1.0;
+		}
+
+<<<<<<< HEAD
 	    private DateTime _lastPlayerUpdateReqest = DateTime.MinValue;
 		public async void UpdatePlayerCards(bool reset)
 		{
@@ -1366,16 +955,52 @@ namespace Hearthstone_Deck_Tracker
 				return;
 			//OnPropertyChanged("OpponentDeck");
 			ListViewOpponent.Update(_game.Opponent.DisplayRevealedCards, false, reset);
+=======
+		[NotifyPropertyChangedInvocator]
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public bool IsRankConvered(bool requireOpponentRank = false)
+		{
+			if(Canvas.GetLeft(StackPanelPlayer) < RankCoveredMaxLeft * Width)
+			{
+				if(Canvas.GetTop(StackPanelPlayer) + StackPanelPlayer.ActualHeight > PlayerRankCoveredMaxHeight * Height)
+				{
+					Log.Info("Player rank is potentially covered by player deck.");
+					return true;
+				}
+				if(Canvas.GetTop(StackPanelPlayer) < OpponentRankCoveredMaxTop * Height)
+				{
+					Log.Info("Opponent rank is potentially covered by player deck.");
+					if(requireOpponentRank)
+						return true;
+				}
+			}
+			if(Canvas.GetLeft(StackPanelOpponent) < RankCoveredMaxLeft * Width)
+			{
+				if(Canvas.GetTop(StackPanelOpponent) + StackPanelOpponent.ActualHeight > PlayerRankCoveredMaxHeight * Height)
+				{
+					Log.Info("Player rank is potentially covered by opponent deck.");
+					return true;
+				}
+				if(Canvas.GetTop(StackPanelOpponent) < OpponentRankCoveredMaxTop * Height)
+				{
+					Log.Info("Opponent rank is potentially covered by opponent deck.");
+					if(requireOpponentRank)
+						return true;
+				}
+			}
+			Log.Info("No ranks should be covered by any decks.");
+			return false;
+>>>>>>> refs/remotes/Epix37/master
+		}
 
-	    [NotifyPropertyChangedInvocator]
-	    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-	    {
-		    var handler = PropertyChanged;
-		    if(handler != null)
-			    handler(this, new PropertyChangedEventArgs(propertyName));	
-	    }
-    }
+		public void ShowFriendsListWarning(bool show) => StackPanelFriendsListWarning.Visibility = show ? Visible : Collapsed;
+
+		public void ShowRestartRequiredWarning() => TextBlockRestartWarning.Visibility = Visible;
+
+		public void HideRestartRequiredWarning() => TextBlockRestartWarning.Visibility = Collapsed;
+	}
 }

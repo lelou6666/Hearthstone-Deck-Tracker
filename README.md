@@ -14,7 +14,12 @@ Installation
 
 FAQ
 =========
-[Go to the FAQ.](https://github.com/Epix37/Hearthstone-Deck-Tracker/wiki/FAQ)
+- You can find the [FAQ here](https://github.com/Epix37/Hearthstone-Deck-Tracker/wiki/FAQ).
+
+
+Contributing
+=========
+- Please read the [coding style and Commit/Pull Request guidelines](https://github.com/Epix37/Hearthstone-Deck-Tracker/blob/master/CONTRIBUTING.md).
 
 
 Community
@@ -26,11 +31,11 @@ Features
 =========
 An in-game overlay:
 
-![Overlay](http://i.imgur.com/EWd6Ung.jpg "The overlay")
+![Overlay](https://github.com/Epix37/Hearthstone-Deck-Tracker/raw/master/raw-assets/readme/overlay.png "Overlay")
 
 The app: 
 
-![Tracker](http://i.imgur.com/FE7Xwxl.png "The tracker")
+![Tracker](https://github.com/Epix37/Hearthstone-Deck-Tracker/raw/master/raw-assets/readme/hdt-ui.png "HDT UI")
 
 - **Tracks**:
   - Cards left in your deck or cards drawn from your deck.

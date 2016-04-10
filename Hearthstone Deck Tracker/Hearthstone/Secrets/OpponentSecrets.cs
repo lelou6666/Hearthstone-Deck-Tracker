@@ -6,6 +6,7 @@ using System.Linq;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
 using Hearthstone_Deck_Tracker.Hearthstone.Entities;
+using Hearthstone_Deck_Tracker.Utility.Logging;
 
 #endregion
 
@@ -76,7 +77,7 @@ namespace Hearthstone_Deck_Tracker
 					helper.PossibleSecrets[cardId] = cardId == knownCardId;
 			}
 			Secrets.Add(helper);
-			Logger.WriteLine("Added secret with id:" + id, "OpponentSecrets");
+			Log.Info("Added secret with id:" + id);
 		}
 
 		public void SecretRemoved(int id, string cardId)
@@ -84,7 +85,7 @@ namespace Hearthstone_Deck_Tracker
 			int index = Secrets.FindIndex(s => s.Id == id);
 			if(index == -1)
 			{
-				Logger.WriteLine(string.Format("Secret with id={0}, cardId={1} not found when trying to remove it.", id, cardId), "OpponentSecrets");
+				Log.Warn($"Secret with id={id}, cardId={cardId} not found when trying to remove it.");
 				return;
 			}
 			Entity attacker, defender;
@@ -103,7 +104,7 @@ namespace Hearthstone_Deck_Tracker
 				ZeroFromAttack(Game.Entities[ProposedAttackerEntityId], Game.Entities[ProposedDefenderEntityId], true, index);
 
 			Secrets.Remove(Secrets[index]);
-			Logger.WriteLine("Removed secret with id:" + id, "OpponentSecrets");
+			Log.Info("Removed secret with id:" + id);
 		}
 
 		public void ZeroFromAttack(Entity attacker, Entity defender, bool fastOnly = false, int stopIndex = -1)
@@ -114,7 +115,8 @@ namespace Hearthstone_Deck_Tracker
 			if(stopIndex == -1)
 				stopIndex = Secrets.Count;
 
-			SetZeroOlder(CardIds.Secrets.Paladin.NobleSacrifice, stopIndex);
+			if(Game.OpponentMinionCount < 7)
+				SetZeroOlder(CardIds.Secrets.Paladin.NobleSacrifice, stopIndex);
 
 			if(defender.IsHero)
 			{
@@ -137,7 +139,7 @@ namespace Hearthstone_Deck_Tracker
 			}
 			else
 			{
-				if(!fastOnly)
+				if(!fastOnly && Game.OpponentMinionCount < 7)
 					SetZeroOlder(CardIds.Secrets.Hunter.SnakeTrap, stopIndex);
 
 				if(attacker.IsMinion)
@@ -151,7 +153,7 @@ namespace Hearthstone_Deck_Tracker
 		public void ClearSecrets()
 		{
 			Secrets.Clear();
-			Logger.WriteLine("Cleared secrets", "OpponentSecrets");
+			Log.Info("Cleared secrets");
 		}
 
 		public void SetMax(string cardId)
@@ -175,6 +177,8 @@ namespace Hearthstone_Deck_Tracker
 				return;
 			for(var index = 0; index < stopIndex; index++)
 				Secrets[index].PossibleSecrets[cardId] = false;
+			if(stopIndex > 0)
+				Log.Info("Set secret to zero: " + Database.GetCardFromId(cardId));
 		}
 
 		public List<Secret> GetSecrets()
@@ -186,7 +190,7 @@ namespace Hearthstone_Deck_Tracker
 				foreach(var possible in secret.PossibleSecrets)
 				{
 					if(possible.Value)
-						returnThis.Find(x => x.CardId == possible.Key).Count = 1;
+						returnThis.Find(x => x.CardId == possible.Key).Count++;
 				}
 			}
 
