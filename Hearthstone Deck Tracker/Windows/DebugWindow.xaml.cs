@@ -11,6 +11,7 @@ using System.Windows.Media;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Enums.Hearthstone;
 using Hearthstone_Deck_Tracker.Hearthstone;
+using Hearthstone_Deck_Tracker.Hearthstone.Entities;
 using Hearthstone_Deck_Tracker.Utility.BoardDamage;
 
 #endregion
@@ -70,13 +71,13 @@ namespace Hearthstone_Deck_Tracker.Windows
 				new CollectionItem(_game.Player.Deck, "Player Deck"),
 				new CollectionItem(_game.Player.Graveyard, "Player Graveyard"),
 				new CollectionItem(_game.Player.Secrets, "Player Secrets"),
-				new CollectionItem(_game.Player.RevealedCards, "Player RevealedCards"),
+				new CollectionItem(_game.Player.RevealedEntities, "Player RevealedEntities"),
 				new CollectionItem(_game.Opponent.Hand, "Opponent Hand"),
 				new CollectionItem(_game.Opponent.Board, "Opponent Board"),
 				new CollectionItem(_game.Opponent.Deck, "Opponent Deck"),
 				new CollectionItem(_game.Opponent.Graveyard, "Opponent Graveyard"),
 				new CollectionItem(_game.Opponent.Secrets, "Opponent Secrets"),
-				new CollectionItem(_game.Opponent.RevealedCards, "Opponent RevealedCards")
+				new CollectionItem(_game.Opponent.RevealedEntities, "Opponent RevealedEntities")
 			};
 			foreach(var collection in collections)
 			{
@@ -93,6 +94,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 
 		private void UpdateBoardDamage()
 		{
+			if(Core.Game.Entities.Count < 67)
+				return;
 			var board = new BoardState();
 			PlayerDataGrid.ItemsSource = board.Player.Cards;
 			OpponentDataGrid.ItemsSource = board.Opponent.Cards;
@@ -233,13 +236,13 @@ namespace Hearthstone_Deck_Tracker.Windows
 
 		public class CollectionItem
 		{
-			public CollectionItem(List<CardEntity> collection, string name)
+			public CollectionItem(IEnumerable<Entity> collection, string name)
 			{
 				Collection = collection;
 				Name = name;
 			}
 
-			public List<CardEntity> Collection { get; set; }
+			public IEnumerable<Entity> Collection { get; set; }
 			public string Name { get; set; }
 		}
 	}

@@ -169,6 +169,9 @@ namespace Hearthstone_Deck_Tracker
 		[DefaultValue(DeckLayout.Layout1)]
 		public DeckLayout DeckPickerItemLayout = DeckLayout.Layout1;
 
+		[DefaultValue(true)]
+		public bool DeckPickerWildIncludesStandard = true;
+
 		[DefaultValue(false)]
 		public bool DeckImportAutoDetectCardCount = false;
 
@@ -479,8 +482,8 @@ namespace Hearthstone_Deck_Tracker
 		[DefaultValue(0.5)]
 		public double OpponentDeckLeft = 0.5;
 
-		[DefaultValue(10)]
-		public double OpponentDeckTop = 10;
+		[DefaultValue(12.5)]
+		public double OpponentDeckTop = 12.5;
 
 		[DefaultValue(100)]
 		public double OpponentOpacity = 100;
@@ -587,8 +590,8 @@ namespace Hearthstone_Deck_Tracker
 		[DefaultValue(false)]
 		public bool RecordOther = false;
 
-		[DefaultValue(false)]
-		public bool RecordBrawl = false;
+		[DefaultValue(true)]
+		public bool RecordBrawl = true;
 
 		[DefaultValue(false)]
 		public bool RecordPractice = false;
@@ -699,7 +702,7 @@ namespace Hearthstone_Deck_Tracker
 		public string SelectedDeckSortingArena = "Name";
 
 		[DefaultValue(DeckType.All)]
-		public DeckType SelectedDeckType = DeckType.All;
+		public DeckType SelectedDeckPickerDeckType = DeckType.All;
 
 		[DefaultValue("enUS")]
 		public string SelectedLanguage = "enUS";

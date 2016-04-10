@@ -2,18 +2,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using Hearthstone_Deck_Tracker.Annotations;
 using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.Hearthstone;
 using Point = System.Drawing.Point;
+using Panel = System.Windows.Controls.Panel;
 
 #endregion
 
@@ -26,8 +25,7 @@ namespace Hearthstone_Deck_Tracker
 	{
 		private readonly GameV2 _game;
 		private bool _appIsClosing;
-
-		private DateTime _lastOpponentUpdateReqest = DateTime.MinValue;
+		private int _updateRequests;
 
 		public OpponentWindow(GameV2 game)
 		{
@@ -54,7 +52,7 @@ namespace Hearthstone_Deck_Tracker
 			}
 		}
 
-		public List<Card> OpponentDeck => _game.Opponent.DisplayRevealedCards;
+		public List<Card> OpponentDeck => _game.Opponent.OpponentCardList;
 
 		public bool ShowToolTip => Config.Instance.WindowCardToolTips;
 
@@ -167,14 +165,7 @@ namespace Hearthstone_Deck_Tracker
 				Topmost = false;
 		}
 
-		public async void UpdateOpponentCards(bool reset)
-		{
-			_lastOpponentUpdateReqest = DateTime.Now;
-			await Task.Delay(50);
-			if((DateTime.Now - _lastOpponentUpdateReqest).Milliseconds < 50)
-				return;
-			ListViewOpponent.Update(OpponentDeck, false, reset);
-		}
+		public void UpdateOpponentCards(List<Card> cards, bool reset) => ListViewOpponent.Update(cards, reset);
 
 		[NotifyPropertyChangedInvocator]
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -186,6 +177,12 @@ namespace Hearthstone_Deck_Tracker
 		{
 			Update();
 			UpdateOpponentLayout();
+		}
+
+		public void UpdateCardFrames()
+		{
+			CanvasOpponentChance.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
+			CanvasOpponentCount.GetBindingExpression(Panel.BackgroundProperty)?.UpdateTarget();
 		}
 	}
 }

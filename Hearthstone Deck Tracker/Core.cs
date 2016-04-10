@@ -29,6 +29,8 @@ namespace Hearthstone_Deck_Tracker
 		private static TrayIcon _trayIcon;
 		private static OverlayWindow _overlay;
 		private static Overview _statsOverview;
+		private static int _updateRequestsPlayer;
+		private static int _updateRequestsOpponent;
 		public static Version Version { get; set; }
 		public static GameV2 Game { get; set; }
 		public static MainWindow MainWindow { get; set; }
@@ -208,9 +210,6 @@ namespace Hearthstone_Deck_Tracker
 					Overlay.ShowOverlay(false);
 					if(Game.IsRunning)
 					{
-						//game was closed
-						if(!Game.IsInMenu)
-							Game.StoreGameState();
 						Log.Info("Exited game");
 						Game.CurrentRegion = Region.UNKNOWN;
 						Log.Info("Reset region");
@@ -236,21 +235,54 @@ namespace Hearthstone_Deck_Tracker
 			CanShutdown = true;
 		}
 
+		private static bool _resetting;
 		public static async Task Reset()
 		{
+
+			if(_resetting)
+			{
+				Log.Warn("Reset already in progress.");
+				return;
+			}
+			_resetting = true;
 			var stoppedReader = await LogReaderManager.Stop();
 			Game.Reset();
 			if(DeckList.Instance.ActiveDeck != null)
 			{
-				Game.SetPremadeDeck((Deck)DeckList.Instance.ActiveDeck.Clone());
+				Game.IsUsingPremade = true;
 				MainWindow.UpdateMenuItemVisibility();
 			}
+			await Task.Delay(1000);
 			if(stoppedReader)
 				LogReaderManager.Restart();
 			Overlay.HideSecrets();
 			Overlay.Update(false);
-			Overlay.UpdatePlayerCards(true);
-			Windows.PlayerWindow.UpdatePlayerCards(true);
+			UpdatePlayerCards(true);
+			_resetting = false;
+		}
+
+		internal static async void UpdatePlayerCards(bool reset = false)
+		{
+			_updateRequestsPlayer++;
+			await Task.Delay(100);
+			_updateRequestsPlayer--;
+			if(_updateRequestsPlayer > 0)
+				return;
+			var cards = Game.Player.PlayerCardList;
+			Overlay.UpdatePlayerCards(cards, reset);
+			Windows.PlayerWindow.UpdatePlayerCards(cards, reset);
+		}
+
+		internal static async void UpdateOpponentCards(bool reset = false)
+		{
+			_updateRequestsOpponent++;
+			await Task.Delay(100);
+			_updateRequestsOpponent--;
+			if(_updateRequestsOpponent > 0)
+				return;
+			var cards = Game.Opponent.OpponentCardList;
+			Overlay.UpdateOpponentCards(cards, reset);
+			Windows.OpponentWindow.UpdateOpponentCards(cards, reset);
 		}
 
 

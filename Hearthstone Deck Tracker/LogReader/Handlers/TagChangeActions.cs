@@ -137,9 +137,12 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 
 		private void ControllerChange(IHsGameState gameState, int id, IGame game, int prevValue, int value)
 		{
-			if(prevValue <= 0)
-				return;
 			var entity = game.Entities[id];
+			if(prevValue <= 0)
+			{
+				entity.Info.OriginalController = value;
+				return;
+			}
 			if(entity.HasTag(PLAYER_ID))
 				return;
 			if(value == game.Player.Id)
@@ -156,7 +159,7 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 			{
 				if(entity.IsInZone(TAG_ZONE.SECRET))
 				{
-					gameState.GameHandler.HandleOpponentStolen(entity, entity.CardId, gameState.GetTurnNumber());
+					gameState.GameHandler.HandlePlayerStolen(entity, entity.CardId, gameState.GetTurnNumber());
 					gameState.ProposeKeyPoint(SecretStolen, id, ActivePlayer.Player);
 				}
 				else if(entity.IsInZone(PLAY))
@@ -207,28 +210,16 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 			if(zone == (int)HAND)
 			{
 				if(controller == game.Player.Id)
-				{
 					ReplayMaker.Generate(HandPos, id, ActivePlayer.Player, game);
-					gameState.GameHandler.HandleZonePositionUpdate(ActivePlayer.Player, entity, HAND, gameState.GetTurnNumber());
-				}
 				else if(controller == game.Opponent.Id)
-				{
 					ReplayMaker.Generate(HandPos, id, ActivePlayer.Opponent, game);
-					gameState.GameHandler.HandleZonePositionUpdate(ActivePlayer.Opponent, entity, HAND, gameState.GetTurnNumber());
-				}
 			}
 			else if(zone == (int)PLAY)
 			{
 				if(controller == game.Player.Id)
-				{
 					ReplayMaker.Generate(BoardPos, id, ActivePlayer.Player, game);
-					gameState.GameHandler.HandleZonePositionUpdate(ActivePlayer.Player, entity, PLAY, gameState.GetTurnNumber());
-				}
 				else if(controller == game.Opponent.Id)
-				{
 					ReplayMaker.Generate(BoardPos, id, ActivePlayer.Opponent, game);
-					gameState.GameHandler.HandleZonePositionUpdate(ActivePlayer.Opponent, entity, PLAY, gameState.GetTurnNumber());
-				}
 			}
 		}
 
@@ -322,9 +313,14 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 
 		private void SimulateZoneChangesFromDeck(IHsGameState gameState, int id, IGame game, int value, string cardId, int maxId)
 		{
-			if(value == (int)DECK || value == (int)SETASIDE)
+			if(value == (int)DECK)
 				return;
 			var entity = game.Entities[id];
+			if(value == (int)SETASIDE)
+			{
+				entity.Info.Created = true;
+				return;
+			}
 			if(entity.IsHero || entity.IsHeroPower || entity.HasTag(PLAYER_ID) || entity.GetTag(CARDTYPE) == (int)TAG_CARDTYPE.GAME
 				|| entity.HasTag(CREATOR))
 				return;
@@ -339,6 +335,7 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 
 		private void ZoneChangeFromOther(IHsGameState gameState, int id, IGame game, int value, int prevValue, int controller, string cardId)
 		{
+			game.Entities[id].Info.Created = true;
 			switch((TAG_ZONE)value)
 			{
 				case PLAY:
@@ -539,13 +536,6 @@ namespace Hearthstone_Deck_Tracker.LogReader.Handlers
 					}
 					else if(controller == game.Opponent.Id)
 					{
-						if(!string.IsNullOrEmpty(game.Entities[id].CardId) && gameState.SetupDone)
-						{
-#if DEBUG
-							Log.Debug($"Opponent Draw (EntityID={id}) already has a CardID. Removing. Blizzard Pls.");
-#endif
-							game.Entities[id].CardId = string.Empty;
-						}
 						gameState.GameHandler.HandleOpponentDraw(game.Entities[id], gameState.GetTurnNumber());
 						gameState.ProposeKeyPoint(Draw, id, ActivePlayer.Opponent);
 					}

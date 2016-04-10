@@ -98,7 +98,7 @@ namespace Hearthstone_Deck_Tracker.Controls.Information
 				else
 					card.Count++;
 			}
-			AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), true, true);
+			AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), true);
 			while(_update)
 			{
 				foreach(var cardId in _demoCards)
@@ -114,7 +114,7 @@ namespace Hearthstone_Deck_Tracker.Controls.Information
 						else
 							card.Count--;
 					}
-					AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), false, false);
+					AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), false);
 				}
 				foreach(var cardId in _demoCards)
 				{
@@ -126,7 +126,7 @@ namespace Hearthstone_Deck_Tracker.Controls.Information
 						_cards.Add(Database.GetCardFromId(cardId));
 					else
 						card.Count++;
-					AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), true, false);
+					AnimatedCardList.Update(_cards.ToSortedCardList().Select(x => (Hearthstone.Card)x.Clone()).ToList(), false);
 				}
 			}
 		}
@@ -137,7 +137,11 @@ namespace Hearthstone_Deck_Tracker.Controls.Information
 				return;
 			var tb = sender as ToggleButton;
 			if(tb != null)
-				ThemeManager.SetTheme(tb.Content.ToString().ToLower());
+			{
+				var theme = tb.Content.ToString().ToLower();
+				ThemeManager.SetTheme(theme);
+				Config.Instance.CardBarTheme = theme;
+			}
 			UpdateCards();
 		}
 
@@ -150,7 +154,12 @@ namespace Hearthstone_Deck_Tracker.Controls.Information
 			}
 		}
 
-		private void CardThemesInfo_OnUnloaded(object sender, RoutedEventArgs e) => _update = false;
+		private void CardThemesInfo_OnUnloaded(object sender, RoutedEventArgs e)
+		{
+			_update = false;
+			Config.Save();
+		}
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[NotifyPropertyChangedInvocator]

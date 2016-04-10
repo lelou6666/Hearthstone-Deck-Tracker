@@ -45,8 +45,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 		private readonly List<Ellipse> _playerBoard = new List<Ellipse>();
 		private readonly List<Rectangle> _playerHand = new List<Rectangle>();
 		private bool? _isFriendsListOpen;
-		private DateTime _lastOpponentUpdateReqest = DateTime.MinValue;
-		private DateTime _lastPlayerUpdateReqest = DateTime.MinValue;
+		private int _updateRequestsPlayer;
+		private int _updateRequestsOpponent;
 		private string _lastToolTipCardId;
 		private bool _lmbDown;
 		private User32.MouseInput _mouseInput;
@@ -75,14 +75,21 @@ namespace Hearthstone_Deck_Tracker.Windows
 			if(Config.Instance.ShowBatteryLife)
 				EnableBatteryMonitor();
 			InitializeCollections();
+			GridMain.Visibility = Hidden;
+			if(User32.GetHearthstoneWindow() != IntPtr.Zero)
+				UpdatePosition();
+			Update(true);
 			UpdateScaling();
+			UpdatePlayerLayout();
+			UpdateOpponentLayout();
+			GridMain.Visibility = Visible;
 		}
 
 		private double ScreenRatio => (4.0 / 3.0) / (Width / Height);
 		public bool ForceHidden { get; set; }
 		public Visibility WarningVisibility { get; set; }
-		public List<Card> PlayerDeck => _game.Player.DisplayCards;
-		public List<Card> OpponentDeck => _game.Opponent.DisplayRevealedCards;
+		public List<Card> PlayerDeck => _game.Player.PlayerCardList;
+		public List<Card> OpponentDeck => _game.Opponent.OpponentCardList;
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public double PlayerStackHeight => (Config.Instance.PlayerDeckHeight / 100 * Height) / (Config.Instance.OverlayPlayerScaling / 100);

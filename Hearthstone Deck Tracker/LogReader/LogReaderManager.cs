@@ -116,6 +116,7 @@ namespace Hearthstone_Deck_Tracker.LogReader
 				await Task.Delay(50);
 			await Task.WhenAll(LogReaders.Where(x => force || x.Info.Reset).Concat(new[] {_gameStatePowerLogReader}).Select(x => x.Stop()));
 			Log.Info("Stopped LogReaders.");
+			PowerLineHandler.Reset();
 			return true;
 		}
 
@@ -147,8 +148,12 @@ namespace Hearthstone_Deck_Tracker.LogReader
 		{
 			foreach(var item in ToProcess.Where(item => item.Value != null))
 			{
+				if(_stop)
+					break;
 				foreach(var line in item.Value.Where(line => line != null))
 				{
+					if(_stop)
+						break;
 					_game.GameTime.Time = line.Time;
 					switch(line.Namespace)
 					{
